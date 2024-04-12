@@ -1,13 +1,25 @@
 <template>
-  <header>hahah</header>
+  <header>
+    <div>hahah</div>
+    <div ref="canvasRef"></div>
+  </header>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
+import MindMap from './mindMap/components/Index.vue'
+import { createMindMapRenderer } from './mindMap/index'
 import { iframe } from './iframe/index'
 import { collaborate } from './service/index'
 import type { ICollaborativeOpt } from './service/index'
 import { parseStringify } from './utils'
+import { reactive } from 'vue'
+
+const canvasRef = ref<HTMLDivElement>()
+const canvasProps = reactive({
+  width: 200,
+  height: 300
+})
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg
@@ -54,6 +66,12 @@ function clipboard() {
 }
 
 onMounted(() => {
+  if (canvasRef.value) {
+    const { createApp } = createMindMapRenderer()
+    const app = createApp(MindMap, { width: canvasProps.width, height: canvasProps.height })
+    console.log('canvasRef.value :>> ', canvasRef.value)
+    app.mount(canvasRef.value)
+  }
   document.addEventListener('copy', clipboard)
 })
 onUnmounted(() => {

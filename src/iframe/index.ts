@@ -14,7 +14,7 @@ interface IframeMessage {
   data?: any
 }
 
-export const IFRAME_MESSAGE_NAME = 'iframemessage'
+export const IFRAME_MESSAGE_NAME = 'iframe-message'
 
 export class IframeProvider {
   private model: MessageModel = {}
