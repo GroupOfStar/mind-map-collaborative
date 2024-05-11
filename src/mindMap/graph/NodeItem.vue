@@ -20,7 +20,7 @@
       y="0"
       rx="8"
       ry="8"
-      fill="#026d77"
+      :fill="nodeTheme.fillColor"
       stroke-dasharray="none"
       stroke-width="0"
       stroke="transparent"
@@ -95,15 +95,21 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, nextTick, computed } from 'vue'
 import type { PropType } from 'vue'
-import { getSizeByElement } from './../../utils/'
+import type { Theme } from '@/theme/Theme'
+import { getSizeByElement } from './../utils/'
 import { useMindMapStore } from '@/store'
 
 const props = defineProps({
-  /** 节点树 */
+  /** 节点 */
   node: {
     type: Object as PropType<ITreeNode>,
+    required: true
+  },
+  /** 主题配置 */
+  theme: {
+    type: Object as PropType<Theme>,
     required: true
   }
 })
@@ -112,6 +118,8 @@ const mindMapStore = useMindMapStore()
 
 /** 文本节点 */
 const textInputRef = ref<HTMLDivElement>()
+
+const nodeTheme = computed(() => props.theme.getNodeThemeByDepth(props.node.depth))
 
 onMounted(() => {
   nextTick(() => {

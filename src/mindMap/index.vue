@@ -1,26 +1,16 @@
 <template>
-  <div class="container">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      version="1.1"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      width="2560"
-      height="580"
-      style="position: relative"
-    >
-      <g transform="rotate(0) translate(0 0) scale(1)">
-        <g class="g-boundary"></g>
-        <g class="g-associative-lines"></g>
-        <g class="g-lines"></g>
-        <g class="g-nodes">
-          <NodeItem v-for="item in listNode" :key="item.id" :node="item"></NodeItem>
-        </g>
-        <g class="g-associative-temp"></g>
-        <g class="g-associative-text"></g>
-        <g class="g-associative-controller"></g>
-      </g>
-      {{ console.log('listNode :>> ', listNode) }}
-    </svg>
+  <div
+    class="container"
+    ref="containerRef"
+    :style="{ backgroundColor: state.theme.backgroundColor }"
+  >
+    <MindGraph
+      :width="graphSize.width"
+      :height="graphSize.height"
+      :state="state"
+      :listNode="listNode"
+    />
+    {{ console.log('state.theme.backgroundColor :>> ', state.theme.backgroundColor) }}
   </div>
 </template>
 
@@ -30,17 +20,20 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { onMounted, onUnmounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { iframe } from '@/iframe'
 import { collaborate } from '@/service'
 import type { ICollaborativeOpt } from '@/service'
 import { parseStringify } from '@/utils'
 import { useMindMapStore } from '@/store'
-import NodeItem from './components/NodeItem/index.vue'
+import MindGraph from './graph/index.vue'
 
 const mindMapStore = useMindMapStore()
-const { listNode } = storeToRefs(mindMapStore)
+const { state, listNode } = storeToRefs(mindMapStore)
+
+const containerRef = ref<HTMLDivElement>()
+const graphSize = reactive({ width: 0, height: 0 })
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg
@@ -70,94 +63,31 @@ iframe.init().then((res) => {
   collaborativeInit(sdkMsg)
 })
 
-function clipboard() {
-  navigator.clipboard.read().then((res) => {
-    res.forEach((item) => {
-      console.log('item :>> ', item)
-      // item.getType('text/html').then((re) => {
-      //   re.text().then((text) => {
-      //     console.log('text :>> ', text)
-      //   })
-      // })
-      item.getType('text/plain').then((re) => {
-        re.text().then((text) => {
-          console.log('text :>> ', text)
-        })
-      })
-    })
-  })
+function onResize() {
+  if (containerRef.value) {
+    console.log(
+      'containerRef.value.getBoundingClientRect() :>> ',
+      containerRef.value.getBoundingClientRect()
+    )
+    const { width, height } = containerRef.value.getBoundingClientRect()
+    console.log('width, height :>> ', width, height)
+    graphSize.width = width
+    graphSize.height = height
+  }
 }
 
 onMounted(() => {
-  document.addEventListener('copy', clipboard)
+  onResize()
+  window.addEventListener('resize', onResize)
 })
 onUnmounted(() => {
-  document.removeEventListener('copy', clipboard)
+  window.removeEventListener('resize', onResize)
 })
 </script>
 
 <style lang="less" scoped>
-.note_wrapper {
-  width: 100vw;
-  height: 100vh;
-  background-color: white;
-  padding-top: 80px;
-  .outline-main {
-    max-width: 748px;
-    min-width: 600px;
-    position: relative;
-    margin: auto;
-
-    .outline-root {
-      font-size: 32px;
-      color: #191919;
-      line-height: 40px;
-      .root-title {
-        outline: none;
-        cursor: text;
-      }
-    }
-    .root-line {
-      height: 1px;
-      margin: 4px 0 22px 0;
-      background: #ebebeb;
-    }
-  }
-  .null-node {
-    font-family: PingFangSC-Regular;
-    font-weight: 400;
-    font-size: 16px;
-    color: #cccccc;
-    line-height: 24px;
-    position: relative;
-    padding: 6px 0;
-    padding-left: 26px;
-    cursor: text;
-    .node-type.dot {
-      display: inline-block;
-      position: absolute;
-      line-height: 16px;
-      width: 14px !important;
-      height: 14px !important;
-      top: 11px;
-      left: 0px;
-      border-radius: 14px;
-      background: #fff;
-      cursor: pointer;
-      span {
-        border-radius: 100%;
-        display: inline-block;
-        background: #999;
-        width: 6px;
-        height: 6px;
-        right: 4px;
-        top: 50%;
-        position: absolute;
-        transform: translateY(-50%);
-        border: 0;
-      }
-      transition: transform 0.2s ease-in-out;
-    }
-  }
+.container {
+  position: absolute;
+  inset: 0;
 }
 </style>

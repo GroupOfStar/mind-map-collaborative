@@ -1,0 +1,95 @@
+import { defaultTheme } from './default'
+
+export class Theme implements ITheme {
+  private static instance?: Theme
+  public layout!: ILayoutType
+  public imgMaxWidth?: number
+  public imgMaxHeight?: number
+  public lineTextMaxWidth?: number
+  public iconSize?: number
+  public lineWidth?: number
+  public lineColor?: string
+  public lineDasharray?: string
+  public lineStyle?: 'curve' | 'straight' | 'direct'
+  public generalizationLineWidth?: number
+  public generalizationLineColor?: string
+  public generalizationLineMargin?: number
+  public generalizationNodeMargin?: number
+  public backgroundColor?: string
+  public backgroundImage?: string
+  public backgroundRepeat?: string
+  public backgroundPosition?: string
+  public backgroundSize?: string
+  public nodeUseLineStyle?: boolean
+  public fontFamily?: string
+  public selectedBorderPadding?: number
+  public expandBorderWidth?: number
+  public expandTBPadding?: number
+  public expandLRPadding?: number
+  public expandFontSize?: number
+  public expandRadius?: number
+  public expandOffset?: number
+
+  public root!: INodeTheme
+  public second!: INodeTheme
+  public node!: INodeTheme
+  public generalization!: INodeTheme
+
+  constructor(theme: ITheme = defaultTheme) {
+    // 单例模式
+    if (Theme.instance) {
+      return Theme.instance
+    }
+    this.layout = theme.layout
+    this.useTheme(theme)
+    return (Theme.instance = this)
+  }
+  /**
+   * 合并主题配置
+   * @param {ITheme} theme 使用的主题
+   * @param {ITheme} defaultConfig 主题的通用配置
+   * @returns {ITheme} 合并后的主题配置
+   */
+  public static mergeTheme(theme: Partial<ITheme>, defaultConfig: ITheme = defaultTheme): ITheme {
+    const { root, second, node, generalization, ...config } = theme
+    const {
+      root: _root,
+      second: _second,
+      node: _node,
+      generalization: _generalization,
+      ..._config
+    } = defaultConfig
+    return {
+      ..._config,
+      ...config,
+      root: { ..._root, ...root },
+      second: { ..._second, ...second },
+      node: { ..._node, ...node },
+      generalization: { ..._generalization, ...generalization }
+    }
+  }
+  /** 是否为水平布局 */
+  public get isHorizontal() {
+    return ['LeftLogical', 'RightLogical', 'Standard'].indexOf(this.layout) > -1
+  }
+  /**
+   * 使用某一主题
+   * @param theme 目前已有在主题有 蓝色系: blueGray, 商务: deepPurple
+   */
+  public useTheme(theme: ITheme) {
+    const newTheme = Theme.mergeTheme(theme)
+    console.log('newTheme :>> ', newTheme)
+    Object.assign(this, newTheme)
+  }
+  /** 是否为水平布局 */
+  public getNodeThemeByDepth(depth: number): INodeTheme {
+    switch (depth) {
+      case 0:
+        return this.root
+      case 1:
+        return this.second
+      default:
+        return this.node
+    }
+  }
+}

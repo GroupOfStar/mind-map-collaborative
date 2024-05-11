@@ -6,7 +6,7 @@
  */
 export function listToTree<T extends INode<{ id: string; pid: string; depth: number }>>(
   nodeList: T[],
-  rootNodeId: string
+  rootNodeId?: string
 ): T[] {
   function treeLoop(nodes: T[], parentId: string, pDeep: number): T[] {
     const children = nodes.filter((item) => item.pid === parentId)
@@ -34,4 +34,23 @@ export function treeToList<T extends INode>(nodeTree: T): T[] {
     (total, item) => [...total, ...(treeToList(item) as T[])],
     [nodeTree]
   )
+}
+
+/** 把服务端返回的布局类型数据转换成代码中已有的布局类型 */
+export function transformLayoutType(layout?: IServiceLayout): ILayoutType {
+  switch (layout) {
+    case 'logicalStructure':
+      return 'RightLogical'
+    // case 'LeftLogical':
+    //   config.layout = 'LeftLogical'
+    //   break
+    // case 'TopLogical':
+    //   config.layout = 'TopLogical'
+    //   break
+    // case 'BottomLogical':
+    //   config.layout = 'BottomLogical'
+    //   break
+    default:
+      return 'RightLogical'
+  }
 }

@@ -5,7 +5,10 @@ interface IServiceConfig {
   config?: any
   info?: any
   layout?: IServiceLayout
-  theme?: any
+  theme: {
+    config: string
+    template: IThemeType
+  }
   children: string[]
 }
 

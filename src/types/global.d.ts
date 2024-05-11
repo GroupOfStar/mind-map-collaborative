@@ -1,4 +1,8 @@
-import type { DefineComponent } from 'vue'
+/** 树型节点 */
+type INode<T extends Record<PropertyKey, any> = {}> = T & {
+  /** 子节点 */
+  children: INode<T>[]
+}
 
 /**
  * 下拉项、lookUp、状态的枚举接口
@@ -26,5 +30,3 @@ interface IframeMessage {
   url?: any
   type?: any
 }
-
-type MindCanvas = DefineComponent<{ width: number }>
