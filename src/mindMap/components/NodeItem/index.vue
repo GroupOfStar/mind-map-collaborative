@@ -1,54 +1,58 @@
 <template>
-  <g id="mind2c16c00f40a24c28b115f60f9c27bf0f" transform="matrix(1,0,0,1,1200,260)">
+  <g :id="node.id" :transform="`matrix(1,0,0,1,${node.x},${node.y})`">
     <rect
-      width="168"
-      height="68"
+      class="node-border active"
+      :width="node.width + 64 + 8 + 1"
+      :height="node.height + 24 + 8 + 1"
       x="-4"
       y="-4"
-      class="node-border active"
-      fill-opacity="0"
-      strock-width="1"
-      stroke="#7716d9"
       rx="8"
       ry="8"
-    ></rect>
+      fill-opacity="0"
+      stroke-width="1"
+      stroke="#7716d9"
+    />
     <rect
-      width="160"
-      height="60"
       class="signal-node"
+      :width="node.width + 64"
+      :height="node.height + 24"
+      x="0"
+      y="0"
+      rx="8"
+      ry="8"
       fill="#026d77"
       stroke-dasharray="none"
       stroke-width="0"
       stroke="transparent"
-      rx="8"
-      ry="8"
-    ></rect>
+      cursor="pointer"
+    />
     <rect
-      class="drag-scale"
+      class="drag-scale-left"
+      width="10"
+      :height="node.height + 24"
+      x="-9"
+      y="0"
+      cursor="e-resize"
+      fill="transparent"
+    />
+    <rect
+      class="drag-scale-right"
+      width="10"
+      :height="node.height + 24"
+      :x="node.width + 64 + 1"
+      y="0"
       cursor="e-resize"
       id="drag-scale"
       fill="transparent"
-      x="159"
-      width="10"
-      y="4"
-      height="52"
-    ></rect>
-    <rect
-      class="drag-scale-left"
-      cursor="e-resize"
-      id="drag-scale-left"
-      fill="transparent"
-      x="-9"
-      width="10"
-      y="4"
-      height="52"
-    ></rect>
+    />
     <foreignObject
       class="node-foreignObject"
+      :width="node.width"
+      :height="node.height"
       x="32"
       y="12"
-      :width="textContainer.width"
-      :height="textContainer.height"
+      cursor="pointer"
+      style="user-select: none"
     >
       <div class="node-all-dom">
         <div class="text-img-dom">
@@ -72,7 +76,7 @@
                 text-decoration: none;
               "
             >
-              中心节点
+              {{ node.text }}
             </div>
             <div
               class="text-other-group"
@@ -91,32 +95,31 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { nextTick, onMounted, ref, reactive, watch } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
+import type { PropType } from 'vue'
 import { getSizeByElement } from './../../utils/'
-
-interface IContainer {
-  width: number
-  height: number
-}
+import { useMindMapStore } from '@/store'
 
 const props = defineProps({
-  width: { type: Number, required: false },
-  height: { type: Number, required: false }
+  /** 节点树 */
+  node: {
+    type: Object as PropType<ITreeNode>,
+    required: true
+  }
 })
+
+const mindMapStore = useMindMapStore()
 
 /** 文本节点 */
 const textInputRef = ref<HTMLDivElement>()
-const textContainer = reactive<IContainer>({
-  width: 0,
-  height: 0
-})
 
 onMounted(() => {
-  if (textInputRef.value) {
-    const { width, height } = getSizeByElement(textInputRef.value)
-    textContainer.width = width
-    textContainer.height = height
-  }
+  nextTick(() => {
+    if (textInputRef.value) {
+      const { width, height } = getSizeByElement(textInputRef.value)
+      mindMapStore.setClientNodeAttrs(props.node, { width, height })
+    }
+  })
 })
 </script>
 

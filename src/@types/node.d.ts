@@ -2,13 +2,24 @@ interface NodeTag {
   color: string
   text: string
 }
-interface NodeData {
-  id?: string //适配概要
-  pid?: string
+// type ILayoutType = 'logicalStructure'
+
+// interface IMindConfig {
+//   id: string
+//   config?: any
+//   info?: any
+//   layout?: ILayoutType
+//   theme?: any
+//   children: INodeData[]
+// }
+
+interface INodeData {
+  id: string
+  pid: string
   isActive?: boolean
   inserting?: boolean
   data: CoreData
-  children?: NodeData[]
+  children: INodeData[]
 }
 
 interface CoreData {

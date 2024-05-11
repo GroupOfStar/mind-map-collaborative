@@ -1,24 +1,27 @@
 <template>
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    version="1.1"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
-    width="2560"
-    height="580"
-    style="position: relative"
-  >
-    <g transform="matrix(1,0,0,1,-613.9999999999999,0)">
-      <g class="g-boundary"></g>
-      <g class="g-associative-lines"></g>
-      <g class="g-lines"></g>
-      <g class="g-nodes">
-        <NodeItem></NodeItem>
+  <div class="container">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      version="1.1"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      width="2560"
+      height="580"
+      style="position: relative"
+    >
+      <g transform="rotate(0) translate(0 0) scale(1)">
+        <g class="g-boundary"></g>
+        <g class="g-associative-lines"></g>
+        <g class="g-lines"></g>
+        <g class="g-nodes">
+          <NodeItem v-for="item in listNode" :key="item.id" :node="item"></NodeItem>
+        </g>
+        <g class="g-associative-temp"></g>
+        <g class="g-associative-text"></g>
+        <g class="g-associative-controller"></g>
       </g>
-      <g class="g-associative-temp"></g>
-      <g class="g-associative-text"></g>
-      <g class="g-associative-controller"></g>
-    </g>
-  </svg>
+      {{ console.log('listNode :>> ', listNode) }}
+    </svg>
+  </div>
 </template>
 
 <script lang="ts">
@@ -27,40 +30,70 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
-import type { PropType } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { iframe } from '@/iframe'
+import { collaborate } from '@/service'
+import type { ICollaborativeOpt } from '@/service'
+import { parseStringify } from '@/utils'
+import { useMindMapStore } from '@/store'
 import NodeItem from './components/NodeItem/index.vue'
 
-interface IPopoverType {
-  visible: boolean
-  nodeData?: NodeData
-  element: HTMLElement | null
-  currentIcon?: string
+const mindMapStore = useMindMapStore()
+const { listNode } = storeToRefs(mindMapStore)
+
+function collaborativeInit(sdkMsg: any) {
+  const { docId, collaConfig, traceId, realName } = sdkMsg
+  const option: ICollaborativeOpt = {
+    docId,
+    scene: collaConfig?.scene,
+    authenticate: {
+      traceId,
+      realName,
+      ...collaConfig?.authentication
+    },
+    WSDocumentPlugin: {
+      ...collaConfig?.collabOptions,
+      awarenessDebounceMs: 100 //awareness防抖间隔默认为100
+    }
+  }
+  collaborate.init(option)
+  collaborate.registryAwareNess()
+  collaborate.factoryAddListener(function (nodes, config) {
+    mindMapStore.setupData(nodes, config)
+  })
 }
 
-const props = defineProps({
-  /** 节点树 */
-  treeData: {
-    type: Array as PropType<NodeData[]>,
-    required: false
-  }
+iframe.init().then((res) => {
+  const { data, ...sdkMsg } = res.initialize
+  console.log('iframe nodeTree :>> ', parseStringify(data, 'parse'))
+  collaborativeInit(sdkMsg)
 })
 
-/** 当前激活的节点 */
-const activeNode = ref<NodeData>()
-/** 节点选择状态 */
-const nodeSelected = ref(false)
-/** 图标浮窗状态 */
-const iconState = reactive<IPopoverType>({
-  visible: false,
-  currentIcon: undefined,
-  nodeData: undefined,
-  element: null
+function clipboard() {
+  navigator.clipboard.read().then((res) => {
+    res.forEach((item) => {
+      console.log('item :>> ', item)
+      // item.getType('text/html').then((re) => {
+      //   re.text().then((text) => {
+      //     console.log('text :>> ', text)
+      //   })
+      // })
+      item.getType('text/plain').then((re) => {
+        re.text().then((text) => {
+          console.log('text :>> ', text)
+        })
+      })
+    })
+  })
+}
+
+onMounted(() => {
+  document.addEventListener('copy', clipboard)
 })
-
-onMounted(() => {})
-
-onUnmounted(() => {})
+onUnmounted(() => {
+  document.removeEventListener('copy', clipboard)
+})
 </script>
 
 <style lang="less" scoped>

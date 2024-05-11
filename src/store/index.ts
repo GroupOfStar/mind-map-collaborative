@@ -1,54 +1,89 @@
+import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
+import * as Structure from './../layout/index'
+import { listToTree, treeToList } from '@/utils/transform'
 
-export const useMindMapStore = defineStore('note', () => {
-  const visible = ref(false)
-  const treeData = reactive<NodeData[]>([])
+const initialClientDate: Omit<IClientNode, 'childIds' | 'children'> = {
+  depth: 0,
+  width: 0,
+  height: 0,
+  marginX: 0,
+  marginY: 0,
+  x: 0,
+  y: 0
+}
 
-  function setupTreeData(data: NodeData[]) {
-    treeData.splice(0, treeData.length, ...data)
-  }
+export const useMindMapStore = defineStore('mindMap', () => {
+  const nodes = ref<ITreeNode[]>([])
+  const config = ref<ITreeConfig>({ id: '', layout: 'RightLogical', children: [] })
 
-  function handleVisibleToggle() {
-    visible.value = !visible.value
-  }
-
-  // 修改节点数据
-  function changeTreeData(
-    key: keyof CoreData,
-    id: string | undefined,
-    keyData: CoreData[keyof CoreData]
-  ) {
-    if (id) {
-      updateTreeData(treeData, key, id, keyData)
+  /** 挂载数据 */
+  function setupData(arr: IServiceNode[], conf: IServiceConfig) {
+    console.log('arr :>> ', arr)
+    console.log('conf :>> ', conf)
+    nodes.value = arr.map((item) => ({
+      ...item,
+      ...initialClientDate,
+      children: [],
+      childIds: item.children
+    }))
+    config.value = {
+      ...conf,
+      layout: 'RightLogical'
     }
   }
 
-  // 更新数据
-  function updateTreeData(
-    data: NodeData[],
-    key: keyof CoreData,
-    id: string,
-    keyData: CoreData[keyof CoreData]
+  /** 修改本地视图数据 */
+  function setClientNodeAttr<T extends ITreeNode, K extends keyof T>(node: T, key: K, val: T[K]) {
+    nodes.value = nodes.value.map((item) => (item.id === node.id ? { ...item, [key]: val } : item))
+  }
+
+  /** 批量修改本地视图数据 */
+  function setClientNodeAttrs<T extends ITreeNode, K extends Partial<IClientNode>>(
+    node: T,
+    clientData: K
   ) {
-    for (let index = 0; index < data.length; index++) {
-      const item = data[index]
-      if (item.id == id) {
-        item.data[key] = keyData
-        break
-      } else {
-        if (item.children) {
-          updateTreeData(item.children, key, id, keyData)
+    nodes.value = nodes.value.map((item) =>
+      item.id === node.id ? { ...item, ...clientData } : item
+    )
+  }
+
+  /** 获取节点树类型的数据 */
+  const treeNode = computed(() => {
+    const tree = listToTree(nodes.value, config.value.children[0])
+    const rootNode = tree[0]
+    if (rootNode) {
+      const MindMapLayout = Structure[config.value.layout]
+      const layoutOption: Structure.ILayoutOption<ITreeNode> = {
+        getWidth: (node) => node.width,
+        getHeight: (node) => node.height,
+        getHGap: (node) => node.marginX,
+        getVGap: (node) => node.marginY,
+        getX: (node) => node.x,
+        setX: (node, val) => {
+          node.x = val
+        },
+        getY: (node) => node.y,
+        setY: (node, val) => {
+          node.y = val
         }
       }
+      const layout = new MindMapLayout(rootNode, layoutOption)
+      const nodeTree = layout.doLayout()
+      return nodeTree
+    } else {
+      return undefined
     }
-  }
+  })
+
+  /** 获取平铺的节点list数据 */
+  const listNode = computed(() => (treeNode.value ? treeToList(treeNode.value) : []))
 
   return {
-    visible,
-    treeData,
-    setupTreeData,
-    changeTreeData,
-    handleVisibleToggle
+    treeNode,
+    listNode,
+    setupData,
+    setClientNodeAttr,
+    setClientNodeAttrs
   }
 })

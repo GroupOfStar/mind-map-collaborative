@@ -14,7 +14,13 @@ import type {
 } from '@cloud/collaborative-client'
 import { defaultConfModel, defaultNodeModel, MindAggregationModel } from './model'
 import { config } from './config'
-import { convertToTree, extractConfAndNodes, filterActiveNodes, simpleDeepClone } from '@/utils'
+import {
+  convertToTree,
+  extractConfAndNodes,
+  filterActiveNodes,
+  filterEffectiveNodes,
+  simpleDeepClone
+} from '@/utils'
 import { throttle } from 'lodash'
 
 /** 协同配置 */
@@ -107,20 +113,35 @@ export class CollaborativeRequest {
     })
   }
   // 协同数据更新
-  private handleUpdate(changes: DocumentChanges) {
+  private handleUpdate2(changes: DocumentChanges) {
     const doc = changes.document.toJSON()
+    console.log('Object.assign({}, doc) :>> ', Object.assign({}, doc))
     const [conf, nodes] = extractConfAndNodes(doc)
+    console.log('Object.assign({}, conf) :>> ', Object.assign({}, conf))
+    const clNodes = Object.assign({}, nodes)
+    console.log('Object.assign({}, nodes) :>> ', clNodes, Object.keys(clNodes).length)
     const data = filterActiveNodes(nodes, conf)
     data.push(conf)
+    console.log('[...data] :>> ', [...data])
     const treeData = simpleDeepClone(convertToTree(data))
     console.log('treeData :>> ', treeData)
   }
+  // 协同数据更新, 防抖200毫秒
+  private handleUpdate = throttle((changes: DocumentChanges, listener: IUpdateListener) => {
+    const doc = changes.document.toJSON()
+    const confId = Object.keys(doc).find((item) => item.startsWith('conf'))
+    if (confId) {
+      const config = Object.assign({}, doc[confId] as IServiceConfig)
+      // 画布单思维导图, 默认取第一个
+      const rootNodeId = config.children[0]
+      const nodes = filterEffectiveNodes<IServiceNode>(doc, rootNodeId)
+      listener(nodes, config)
+    }
+  }, 200)
   // 数据监听
-  public factoryAddListener() {
-    // 更新防抖200毫秒
-    const updateListener = throttle(this.handleUpdate.bind(this), 200)
+  public factoryAddListener(listener: IUpdateListener) {
     // 协同数据监听
-    this.factory.addUpdateListener(updateListener)
+    this.factory.addUpdateListener((changes) => this.handleUpdate(changes, listener))
     // 手动获取协同数据, 其会触发一次协同数据监听 即 this.handleUpdate方法
     this.factory.active(DocumentId.from('_agg_mind', this.docId))
   }

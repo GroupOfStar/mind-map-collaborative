@@ -148,9 +148,12 @@ export const convertToTree = (list: any) => {
  * @param confNode
  * @param allNodes
  */
-export function filterActiveNodes(allNodes: any, confNode: any) {
+export function filterActiveNodes<T extends { id: string; children: string[] }>(
+  allNodes: any,
+  confNode: any
+) {
   const queue: any[] = []
-  const result: any[] = []
+  const result: T[] = []
   queue.push(confNode)
   const way = (node: any, childId: any) => {
     if (!node.id) {
@@ -178,12 +181,32 @@ export function filterActiveNodes(allNodes: any, confNode: any) {
   return result
 }
 
+/**
+ * 从所有节点中过滤出需要显示的节点
+ * @param confNode
+ * @param allNodes
+ */
+export function filterEffectiveNodes<T extends { id: string; children: string[] }>(
+  docData: { [key: string]: T },
+  rootNodeId: string
+): T[] {
+  const currentNode = Object.assign({}, docData[rootNodeId])
+  return currentNode.children.reduce<T[]>(
+    (preV, current) => {
+      return preV.concat(filterEffectiveNodes(docData, current))
+    },
+    [currentNode]
+  )
+}
+
 export function extractConfAndNodes(doc: any): [any, Record<string, any>] {
   let conf = null
   const nodes: Record<string, any> = {}
   for (const id in doc) {
     if (id.startsWith('conf')) {
+      console.log('id :>> ', id)
       conf = doc[id]
+      console.log('conf :>> ', conf)
       delete doc[id]
     } else if (id.startsWith('mind')) {
       nodes[id] = doc[id]
