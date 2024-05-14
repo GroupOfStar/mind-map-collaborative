@@ -22,7 +22,9 @@ export class Theme implements ITheme {
   public backgroundSize?: string
   public nodeUseLineStyle?: boolean
   public fontFamily?: string
-  public selectedBorderPadding?: number
+  public selectedBorderWidth!: number
+  public selectedBorderColor!: string
+  public selectedBorderPadding!: number
   public expandBorderWidth?: number
   public expandTBPadding?: number
   public expandLRPadding?: number
@@ -50,7 +52,10 @@ export class Theme implements ITheme {
    * @param {ITheme} defaultConfig 主题的通用配置
    * @returns {ITheme} 合并后的主题配置
    */
-  public static mergeTheme(theme: Partial<ITheme>, defaultConfig: ITheme = defaultTheme): ITheme {
+  public static mergeTheme(
+    theme: Partial<ITheme<Partial<INodeTheme>>>,
+    defaultConfig: ITheme = defaultTheme
+  ): ITheme {
     const { root, second, node, generalization, ...config } = theme
     const {
       root: _root,
@@ -81,15 +86,15 @@ export class Theme implements ITheme {
     console.log('newTheme :>> ', newTheme)
     Object.assign(this, newTheme)
   }
-  /** 是否为水平布局 */
-  public getNodeThemeByDepth(depth: number): INodeTheme {
-    switch (depth) {
+  /** 获取服务端节点样式，如果没有，返回当前主题的默认样式 */
+  public getStyles(node: ITreeNode): INodeTheme {
+    switch (node.depth) {
       case 0:
-        return this.root
+        return { ...this.root, ...node }
       case 1:
-        return this.second
+        return { ...this.second, ...node }
       default:
-        return this.node
+        return { ...this.node, ...node }
     }
   }
 }

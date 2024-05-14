@@ -12,7 +12,7 @@
       <g class="g-associative-lines"></g>
       <g class="g-lines"></g>
       <g class="g-nodes">
-        <NodeItem v-for="item in listNode" :key="item.id" :node="item" :theme="state.theme" />
+        <NodeItem v-for="item in listNode" :key="item.id" :node="item" />
       </g>
       <g class="g-associative-temp"></g>
       <g class="g-associative-text"></g>
@@ -41,11 +41,6 @@ defineProps({
   /** 高度 */
   height: {
     type: Number,
-    required: true
-  },
-  /** 状态 */
-  state: {
-    type: Object as PropType<IMindMapState>,
     required: true
   },
   /** 状态 */

@@ -1,28 +1,28 @@
 /** 节点配置 */
 interface INodeTheme {
   /** 节点字体 */
-  fontFamily?: string
+  fontFamily: string
   /** 节点横向边距 */
-  paddingX?: number
+  paddingX: number
   /** 节点纵向边距 */
-  paddingY?: number
+  paddingY: number
   /** 节点形状 */
-  shape?: string
+  shape: string
   /** 节点横向间距  */
   marginX?: number
   /** 节点纵向间距 */
   marginY?: number
   /** 节点填充颜色 */
-  fillColor?: string
+  fillColor: string
   /** 节点字体粗细 */
-  fontWeight?: number | string
+  fontWeight: number | string
   /** 节点字体大小 */
-  fontSize?: number
+  fontSize: number
   /** 节点字体颜色 */
-  color?: string
+  color: string
   /** 节点字体样式 */
-  fontStyle?: string
-  lineHeight?: number
+  fontStyle: string
+  lineHeight: number
   /** 连线的粗细 */
   lineWidth?: number
   /** 连线的颜色 */
@@ -30,21 +30,21 @@ interface INodeTheme {
   /** 连线样式 */
   lineDasharray?: string
   /** 边框颜色 */
-  borderColor?: string
+  borderColor: string
   /** 边框宽度 */
-  borderWidth?: number
+  borderWidth: number
   /** 边框样式 */
-  borderDasharray?: string
+  borderDasharray: string
   /** 边框圆角 */
-  borderRadius?: number
+  borderRadius: number
   /** 边框透明度 */
-  textDecoration?: string
+  textDecoration: string
   /** 选中状态样式 */
-  active?: {
+  active: {
     /** 选中状态的边框样式 */
-    borderDasharray?: string
+    borderDasharray: string
     /** 选中状态的边框颜色 */
-    rectBorder?: string
+    rectBorder: string
   }
 }
 
@@ -93,8 +93,12 @@ interface IConfig {
   nodeUseLineStyle?: boolean
   /** 默认鸿蒙字体 */
   fontFamily?: string
-  /** 选中节点后边框内的边距 */
-  selectedBorderPadding?: number
+  /** 选中节点后的边框宽度 */
+  selectedBorderWidth: number
+  /** 选中节点后的边框颜色 */
+  selectedBorderColor: string
+  /** 选中节点后的边框内边距 */
+  selectedBorderPadding: number
   /** 展开图标的边框宽度 */
   expandBorderWidth?: number
   /** 展开图标上下内边距, 注：内边距是不包含边框的 */
@@ -110,13 +114,13 @@ interface IConfig {
 }
 
 /** 主题配置 */
-interface ITheme extends IConfig {
+interface ITheme<T = INodeTheme> extends IConfig {
   /** 根节点 */
-  root: INodeTheme
+  root: T
   /** 二级节点 */
-  second: INodeTheme
+  second: T
   /** 三级及以下节点 */
-  node: INodeTheme
+  node: T
   /** 概要节点 */
-  generalization: INodeTheme
+  generalization: T
 }

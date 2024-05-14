@@ -1,32 +1,46 @@
 <template>
-  <g :id="node.id" :transform="`matrix(1,0,0,1,${node.x},${node.y})`">
+  <g :id="node.id" :transform="`matrix(1,0,0,1,${nodeRect.x},${nodeRect.y})`">
     <rect
       class="node-border active"
-      :width="node.width + 64 + 8 + 1"
-      :height="node.height + 24 + 8 + 1"
-      x="-4"
-      y="-4"
-      rx="8"
-      ry="8"
+      :width="
+        nodeRect.width +
+        (nodeStyle.paddingX +
+          nodeStyle.borderWidth +
+          theme.selectedBorderPadding +
+          theme.selectedBorderWidth) *
+          2
+      "
+      :height="
+        nodeRect.height +
+        (nodeStyle.paddingY +
+          nodeStyle.borderWidth +
+          theme.selectedBorderPadding +
+          theme.selectedBorderWidth) *
+          2
+      "
+      :x="-(theme.selectedBorderPadding + theme.selectedBorderWidth)"
+      :y="-(theme.selectedBorderPadding + theme.selectedBorderWidth)"
+      :rx="nodeStyle.borderRadius"
+      :ry="nodeStyle.borderRadius"
       fill-opacity="0"
-      stroke-width="1"
-      stroke="#7716d9"
+      :stroke-width="theme.selectedBorderWidth"
+      :stroke="theme.selectedBorderColor"
     />
     <rect
       class="signal-node"
-      :width="node.width + 64"
-      :height="node.height + 24"
+      :width="nodeRect.width + (nodeStyle.paddingX + nodeStyle.borderWidth) * 2"
+      :height="nodeRect.height + (nodeStyle.paddingY + nodeStyle.borderWidth) * 2"
       x="0"
       y="0"
-      rx="8"
-      ry="8"
-      :fill="nodeTheme.fillColor"
-      stroke-dasharray="none"
-      stroke-width="0"
-      stroke="transparent"
+      :rx="nodeStyle.borderRadius"
+      :ry="nodeStyle.borderRadius"
+      :fill="nodeStyle.fillColor"
+      :stroke-dasharray="nodeStyle.borderDasharray"
+      :stroke-width="nodeStyle.borderWidth"
+      :stroke="nodeStyle.borderColor"
       cursor="pointer"
     />
-    <rect
+    <!-- <rect
       class="drag-scale-left"
       width="10"
       :height="node.height + 24"
@@ -44,15 +58,14 @@
       cursor="e-resize"
       id="drag-scale"
       fill="transparent"
-    />
+    /> -->
     <foreignObject
       class="node-foreignObject"
-      :width="node.width"
-      :height="node.height"
-      x="32"
-      y="12"
+      :width="nodeRect.width"
+      :height="nodeRect.height"
+      :x="nodeStyle.paddingX + nodeStyle.borderWidth"
+      :y="nodeStyle.paddingY + nodeStyle.borderWidth"
       cursor="pointer"
-      style="user-select: none"
     >
       <div class="node-all-dom">
         <div class="text-img-dom">
@@ -60,21 +73,14 @@
             <div
               class="text-content-input"
               ref="textInputRef"
-              style="
-                box-sizing: border-box;
-                outline: none;
-                white-space: pre-wrap;
-                overflow-wrap: break-word;
-                word-break: break-all;
-                overflow: hidden;
-                font-family: Harmony Medium;
-                font-size: 24px;
-                font-weight: 600;
-                line-height: 1.5;
-                font-style: normal;
-                color: rgba(255, 255, 255, 0.8);
-                text-decoration: none;
-              "
+              :style="{
+                fontFamily: nodeStyle.fontFamily,
+                fontSize: `${nodeStyle.fontSize}px`,
+                fontWeight: nodeStyle.fontWeight,
+                lineHeight: nodeStyle.lineHeight,
+                fontStyle: nodeStyle.fontStyle,
+                color: nodeStyle.color
+              }"
             >
               {{ node.text }}
             </div>
@@ -95,44 +101,54 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { PropType } from 'vue'
-import type { Theme } from '@/theme/Theme'
 import { getSizeByElement } from './../utils/'
-import { useMindMapStore } from '@/store'
+import { useNodeRectStore } from '@/store'
 
 const props = defineProps({
   /** 节点 */
   node: {
     type: Object as PropType<ITreeNode>,
     required: true
-  },
-  /** 主题配置 */
-  theme: {
-    type: Object as PropType<Theme>,
-    required: true
   }
 })
-
-const mindMapStore = useMindMapStore()
 
 /** 文本节点 */
 const textInputRef = ref<HTMLDivElement>()
 
-const nodeTheme = computed(() => props.theme.getNodeThemeByDepth(props.node.depth))
+const nodeRectStore = useNodeRectStore()
 
-onMounted(() => {
-  nextTick(() => {
-    if (textInputRef.value) {
-      const { width, height } = getSizeByElement(textInputRef.value)
-      mindMapStore.setClientNodeAttrs(props.node, { width, height })
+const nodeRect = computed(() => nodeRectStore.getNodeClientRect(props.node.id))
+const theme = computed(() => nodeRectStore.state.theme)
+const nodeStyle = computed(() => theme.value.getStyles(props.node))
+
+watch(
+  [() => props.node, () => textInputRef.value],
+  ([newNode, newRef]) => {
+    if (newRef) {
+      const { width, height } = getSizeByElement(newRef)
+      nodeRectStore.setClientNodeAttrs(newNode.id, { width, height })
     }
-  })
-})
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="less" scoped>
 .node-foreignObject {
   display: block;
+  user-select: none;
+  .text-content-group {
+    .text-content-input {
+      box-sizing: border-box;
+      outline: none;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: break-all;
+      overflow: hidden;
+      text-decoration: none;
+    }
+  }
 }
 </style>

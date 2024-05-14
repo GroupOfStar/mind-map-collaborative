@@ -19,6 +19,9 @@ interface IServiceNode {
   expand: boolean
   text: string
   children: string[]
+
+  borderColor?: string
+  borderWidth?: number
 }
 
 type IUpdateListener = (nodes: IServiceNode[], config: IServiceConfig) => void

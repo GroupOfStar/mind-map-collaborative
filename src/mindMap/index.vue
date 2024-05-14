@@ -7,10 +7,9 @@
     <MindGraph
       :width="graphSize.width"
       :height="graphSize.height"
-      :state="state"
+      :theme="state.theme"
       :listNode="listNode"
     />
-    {{ console.log('state.theme.backgroundColor :>> ', state.theme.backgroundColor) }}
   </div>
 </template>
 
@@ -20,20 +19,22 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
+import MindGraph from './graph/index.vue'
 import { iframe } from '@/iframe'
 import { collaborate } from '@/service'
 import type { ICollaborativeOpt } from '@/service'
+import { useMindMapStore, useNodeRectStore } from '@/store'
+import { useFullScreenSize } from './hooks'
 import { parseStringify } from '@/utils'
-import { useMindMapStore } from '@/store'
-import MindGraph from './graph/index.vue'
 
 const mindMapStore = useMindMapStore()
-const { state, listNode } = storeToRefs(mindMapStore)
+const { listNode } = storeToRefs(mindMapStore)
 
-const containerRef = ref<HTMLDivElement>()
-const graphSize = reactive({ width: 0, height: 0 })
+const nodeRectStore = useNodeRectStore()
+const { state } = storeToRefs(nodeRectStore)
+
+const { containerRef, graphSize } = useFullScreenSize()
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg
@@ -53,6 +54,7 @@ function collaborativeInit(sdkMsg: any) {
   collaborate.init(option)
   collaborate.registryAwareNess()
   collaborate.factoryAddListener(function (nodes, config) {
+    console.log('serviceNodes :>> ', nodes)
     mindMapStore.setupData(nodes, config)
   })
 }
@@ -61,27 +63,6 @@ iframe.init().then((res) => {
   const { data, ...sdkMsg } = res.initialize
   console.log('iframe nodeTree :>> ', parseStringify(data, 'parse'))
   collaborativeInit(sdkMsg)
-})
-
-function onResize() {
-  if (containerRef.value) {
-    console.log(
-      'containerRef.value.getBoundingClientRect() :>> ',
-      containerRef.value.getBoundingClientRect()
-    )
-    const { width, height } = containerRef.value.getBoundingClientRect()
-    console.log('width, height :>> ', width, height)
-    graphSize.width = width
-    graphSize.height = height
-  }
-}
-
-onMounted(() => {
-  onResize()
-  window.addEventListener('resize', onResize)
-})
-onUnmounted(() => {
-  window.removeEventListener('resize', onResize)
 })
 </script>
 
