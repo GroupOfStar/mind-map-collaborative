@@ -4,22 +4,16 @@
       class="node-border active"
       :width="
         nodeRect.width +
-        (nodeStyle.paddingX +
-          nodeStyle.borderWidth +
-          theme.selectedBorderPadding +
-          theme.selectedBorderWidth) *
-          2
+        (nodeStyle.paddingX + theme.selectedBorderPadding + theme.selectedBorderWidth) * 2 +
+        nodeStyle.borderWidth * 3
       "
       :height="
         nodeRect.height +
-        (nodeStyle.paddingY +
-          nodeStyle.borderWidth +
-          theme.selectedBorderPadding +
-          theme.selectedBorderWidth) *
-          2
+        (nodeStyle.paddingY + theme.selectedBorderPadding + theme.selectedBorderWidth) * 2 +
+        nodeStyle.borderWidth * 3
       "
-      :x="-(theme.selectedBorderPadding + theme.selectedBorderWidth)"
-      :y="-(theme.selectedBorderPadding + theme.selectedBorderWidth)"
+      :x="-(theme.selectedBorderPadding + theme.selectedBorderWidth + nodeStyle.borderWidth / 2)"
+      :y="-(theme.selectedBorderPadding + theme.selectedBorderWidth + nodeStyle.borderWidth / 2)"
       :rx="nodeStyle.borderRadius"
       :ry="nodeStyle.borderRadius"
       fill-opacity="0"
@@ -63,8 +57,8 @@
       class="node-foreignObject"
       :width="nodeRect.width"
       :height="nodeRect.height"
-      :x="nodeStyle.paddingX + nodeStyle.borderWidth"
-      :y="nodeStyle.paddingY + nodeStyle.borderWidth"
+      :x="nodeStyle.paddingX + nodeStyle.borderWidth / 2"
+      :y="nodeStyle.paddingY + nodeStyle.borderWidth / 2"
       cursor="pointer"
     >
       <div class="node-all-dom">

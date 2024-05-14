@@ -4,12 +4,7 @@
     ref="containerRef"
     :style="{ backgroundColor: state.theme.backgroundColor }"
   >
-    <MindGraph
-      :width="graphSize.width"
-      :height="graphSize.height"
-      :theme="state.theme"
-      :listNode="listNode"
-    />
+    <MindGraph :width="graphSize.width" :height="graphSize.height" :listNode="listNode" />
   </div>
 </template>
 

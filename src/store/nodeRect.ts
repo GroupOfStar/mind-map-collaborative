@@ -73,12 +73,12 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
         getX: (node) => node.x,
         setX: (node, val) => {
           const { selectedBorderPadding, selectedBorderWidth } = theme
-          node.x = val + selectedBorderPadding + selectedBorderWidth
+          node.x = val + selectedBorderPadding + (selectedBorderWidth * 3) / 2
         },
         getY: (node) => node.y,
         setY: (node, val) => {
           const { selectedBorderPadding, selectedBorderWidth } = theme
-          node.y = val + selectedBorderPadding + selectedBorderWidth
+          node.y = val + selectedBorderPadding + (selectedBorderWidth * 3) / 2
         }
       }
       const mindMapLayout = new Structure[layout](rootTreeNode, layoutOption)
