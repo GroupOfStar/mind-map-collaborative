@@ -83,7 +83,6 @@ export class Theme implements ITheme {
    */
   public useTheme(theme: ITheme) {
     const newTheme = Theme.mergeTheme(theme)
-    console.log('newTheme :>> ', newTheme)
     Object.assign(this, newTheme)
   }
   /** 获取服务端节点样式，如果没有，返回当前主题的默认样式 */

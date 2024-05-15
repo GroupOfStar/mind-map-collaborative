@@ -18,7 +18,6 @@
       <g class="g-associative-text"></g>
       <g class="g-associative-controller"></g>
     </g>
-    {{ console.log('listNode :>> ', listNode) }}
   </svg>
 </template>
 

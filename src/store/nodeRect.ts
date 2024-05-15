@@ -28,7 +28,7 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     const { layout, theme, children } = config
     state.rootNodeId = children[0]
     state.layout = transformLayoutType(layout)
-    state.theme.useTheme(ThemeConfigs[theme.template])
+    state.theme.useTheme({ ...ThemeConfigs[theme.template], ...JSON.parse(theme.config) })
   }
 
   /** 修改本地视图数据 */

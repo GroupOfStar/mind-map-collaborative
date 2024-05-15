@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="container"
-    ref="containerRef"
-    :style="{ backgroundColor: state.theme.backgroundColor }"
-  >
+  <div class="container" ref="containerRef" :style="{ backgroundColor }">
     <MindGraph :width="graphSize.width" :height="graphSize.height" :listNode="listNode" />
   </div>
 </template>
@@ -14,6 +10,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
+import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import MindGraph from './graph/index.vue'
 import { iframe } from '@/iframe'
@@ -27,9 +24,10 @@ const mindMapStore = useMindMapStore()
 const { listNode } = storeToRefs(mindMapStore)
 
 const nodeRectStore = useNodeRectStore()
-const { state } = storeToRefs(nodeRectStore)
 
 const { containerRef, graphSize } = useFullScreenSize()
+
+const backgroundColor = computed(() => nodeRectStore.state.theme.backgroundColor)
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg
@@ -49,7 +47,7 @@ function collaborativeInit(sdkMsg: any) {
   collaborate.init(option)
   collaborate.registryAwareNess()
   collaborate.factoryAddListener(function (nodes, config) {
-    console.log('serviceNodes :>> ', nodes)
+    console.log('serviceNodes :>> ', nodes, 'serviceConfig :>>', config)
     mindMapStore.setupData(nodes, config)
   })
 }
