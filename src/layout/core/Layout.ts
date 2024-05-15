@@ -13,6 +13,20 @@ export abstract class Layout<T extends ITreeNode> {
   protected abstract get offset(): { offsetX: number; offsetY: number }
   /** 布局 */
   public abstract doLayout(): T
+  /** 获取布局偏移量 */
+  protected getLayoutOffset(rootNode: T) {
+    function loop<T extends ITreeNode>(nodeTree: T): T[] {
+      const fid = nodeTree.children[0]
+      if (fid) {
+        return [nodeTree, ...(loop(fid) as T[])]
+      } else {
+        return [nodeTree]
+      }
+    }
+    const outerNodeList = loop(rootNode)
+    const minY = Math.min(...outerNodeList.map(this.option.getY))
+    return { x: this.option.getX(rootNode), y: minY }
+  }
   /** 获取节点树的边界框 */
   protected getBoundingBox(rootNode: T) {
     const bb = {

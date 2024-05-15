@@ -56,8 +56,8 @@ interface IConfig {
   imgMaxWidth?: number
   /** 图片显示的最大高度 */
   imgMaxHeight?: number
-  /** 一行文本的最大宽度 */
-  lineTextMaxWidth?: number
+  /** 达到该宽度文本自动换行 */
+  textAutoWrapWidth?: number
   /** icon的大小 */
   iconSize?: number
   /** 连线的粗细 */

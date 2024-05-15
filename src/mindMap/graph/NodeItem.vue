@@ -1,19 +1,22 @@
 <template>
-  <g :id="node.id" :transform="`matrix(1,0,0,1,${nodeRect.x},${nodeRect.y})`">
+  <g
+    :id="node.id"
+    :transform="`matrix(1,0,0,1,${nodeRect.x + theme.selectedBorderPadding + theme.selectedBorderWidth},${nodeRect.y + theme.selectedBorderPadding + theme.selectedBorderWidth})`"
+  >
     <rect
       class="node-border active"
       :width="
         nodeRect.width +
-        (nodeStyle.paddingX + theme.selectedBorderPadding + theme.selectedBorderWidth) * 2 +
-        nodeStyle.borderWidth * 3
+        (nodeStyle.paddingX + theme.selectedBorderPadding + nodeStyle.borderWidth) * 2 +
+        theme.selectedBorderWidth
       "
       :height="
         nodeRect.height +
-        (nodeStyle.paddingY + theme.selectedBorderPadding + theme.selectedBorderWidth) * 2 +
-        nodeStyle.borderWidth * 3
+        (nodeStyle.paddingY + theme.selectedBorderPadding + nodeStyle.borderWidth) * 2 +
+        theme.selectedBorderWidth
       "
-      :x="-(theme.selectedBorderPadding + theme.selectedBorderWidth + nodeStyle.borderWidth / 2)"
-      :y="-(theme.selectedBorderPadding + theme.selectedBorderWidth + nodeStyle.borderWidth / 2)"
+      :x="-(theme.selectedBorderPadding + theme.selectedBorderWidth / 2)"
+      :y="-(theme.selectedBorderPadding + theme.selectedBorderWidth / 2)"
       :rx="nodeStyle.borderRadius"
       :ry="nodeStyle.borderRadius"
       fill-opacity="0"
@@ -22,10 +25,10 @@
     />
     <rect
       class="signal-node"
-      :width="nodeRect.width + (nodeStyle.paddingX + nodeStyle.borderWidth) * 2"
-      :height="nodeRect.height + (nodeStyle.paddingY + nodeStyle.borderWidth) * 2"
-      x="0"
-      y="0"
+      :width="nodeRect.width + nodeStyle.paddingX * 2 + nodeStyle.borderWidth"
+      :height="nodeRect.height + nodeStyle.paddingY * 2 + nodeStyle.borderWidth"
+      :x="nodeStyle.borderWidth / 2"
+      :y="nodeStyle.borderWidth / 2"
       :rx="nodeStyle.borderRadius"
       :ry="nodeStyle.borderRadius"
       :fill="nodeStyle.fillColor"
@@ -57,8 +60,8 @@
       class="node-foreignObject"
       :width="nodeRect.width"
       :height="nodeRect.height"
-      :x="nodeStyle.paddingX + nodeStyle.borderWidth / 2"
-      :y="nodeStyle.paddingY + nodeStyle.borderWidth / 2"
+      :x="nodeStyle.paddingX + nodeStyle.borderWidth"
+      :y="nodeStyle.paddingY + nodeStyle.borderWidth"
       cursor="pointer"
     >
       <div class="node-all-dom">
@@ -95,7 +98,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import type { PropType } from 'vue'
 import { getSizeByElement } from './../utils/'
 import { useNodeRectStore } from '@/store'
@@ -118,13 +121,19 @@ const theme = computed(() => nodeRectStore.state.theme)
 const nodeStyle = computed(() => theme.value.getStyles(props.node))
 
 watch(
-  [() => props.node, () => textInputRef.value],
-  ([newNode, newRef]) => {
-    if (newRef) {
-      const { width, height } = getSizeByElement(newRef)
-      nodeRectStore.setClientNodeAttrs(newNode.id, { width, height })
-    }
-  },
+  [() => props.node, () => textInputRef.value, () => theme.value.textAutoWrapWidth],
+  ([newNode, newRef, newMaxWidth]) =>
+    nextTick(() => {
+      if (newRef && newMaxWidth) {
+        let { width, height } = getSizeByElement(newRef)
+        if (width > newMaxWidth) {
+          const maxWidthRect = getSizeByElement(newRef, `${newMaxWidth}px`)
+          width = maxWidthRect.width
+          height = maxWidthRect.height
+        }
+        nodeRectStore.setClientNodeAttrs(newNode.id, { width, height })
+      }
+    }),
   { deep: true }
 )
 </script>

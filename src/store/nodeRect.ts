@@ -72,13 +72,11 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
         getVGap: (node) => theme.getStyles(node).marginY || 0,
         getX: (node) => node.x,
         setX: (node, val) => {
-          const { selectedBorderPadding, selectedBorderWidth } = theme
-          node.x = val + selectedBorderPadding + (selectedBorderWidth * 3) / 2
+          node.x = val
         },
         getY: (node) => node.y,
         setY: (node, val) => {
-          const { selectedBorderPadding, selectedBorderWidth } = theme
-          node.y = val + selectedBorderPadding + (selectedBorderWidth * 3) / 2
+          node.y = val
         }
       }
       const mindMapLayout = new Structure[layout](rootTreeNode, layoutOption)

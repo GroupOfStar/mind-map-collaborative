@@ -10,6 +10,8 @@ export class RightLogical<T extends ITreeNode> extends Layout<T> {
   public doLayout() {
     const wt = nonLayeredTidyTree(this.rootNode, true, this.option)
     WrappedTree.convertBack(wt, this.rootNode, this.option)
+    const offset = this.getLayoutOffset(this.rootNode)
+    this.translate(this.rootNode, -offset.x, -offset.y)
     return this.rootNode
   }
 }

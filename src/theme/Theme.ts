@@ -5,7 +5,7 @@ export class Theme implements ITheme {
   public layout!: ILayoutType
   public imgMaxWidth?: number
   public imgMaxHeight?: number
-  public lineTextMaxWidth?: number
+  public textAutoWrapWidth?: number
   public iconSize?: number
   public lineWidth?: number
   public lineColor?: string
