@@ -116,7 +116,7 @@ export const defaultTheme: ITheme = {
     fillColor: ' #7716D9',
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: 'noraml',
+    fontWeight: 'normal',
     fontStyle: 'normal',
     lineHeight: 1.5,
     borderColor: 'transparent',

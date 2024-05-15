@@ -1,44 +1,31 @@
-import { Theme } from "./Theme";
+import { Theme } from './Theme'
 
 /** 蓝色系 */
 export const blueGray = Theme.mergeTheme({
-  // 连线的颜色
-  lineColor: "#4A51D9",
-  // 连线风格
-  lineStyle: "straight",
-  // 概要连线的颜色
-  generalizationLineColor: "#4A51D9",
-  // 背景颜色
-  backgroundColor: "#FFFFFF",
-  // 根节点样式
+  lineColor: '#4A51D9',
+  lineStyle: 'straight',
+  generalizationLineColor: '#4A51D9',
+  backgroundColor: '#FFFFFF',
   root: {
-    fillColor: "#4A51D9",
-    // 连线的颜色
-    lineColor: "#4A51D9"
+    fillColor: '#4A51D9',
+    lineColor: '#4A51D9'
   },
-  // 二级节点样式
   second: {
-    fillColor: "#6CA1FF",
-    color: "#FFFFFF",
-    // 连线的粗细
+    fillColor: '#6CA1FF',
+    color: '#FFFFFF',
     lineWidth: 2,
-    // 连线的颜色
-    lineColor: "#4A51D9",
-    // 连线样式
+    lineColor: '#4A51D9',
     borderWidth: 0
   },
-  // 三级及以下节点样式
   node: {
-    // 连线的颜色
-    lineColor: "#4A51D9",
-    fillColor: "#EBEBEB",
-    color: "#0D0D0D",
-    borderColor: "#8BB5FF"
+    lineColor: '#4A51D9',
+    fillColor: '#EBEBEB',
+    color: '#0D0D0D',
+    borderColor: '#8BB5FF'
   },
-  // 概要节点样式
   generalization: {
-    fillColor: "#4A51D9",
-    color: "#fff",
-    borderColor: "#549688"
+    fillColor: '#4A51D9',
+    color: '#fff',
+    borderColor: '#549688'
   }
-});
+})
