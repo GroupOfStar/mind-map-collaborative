@@ -1,7 +1,7 @@
-import { Theme } from './Theme'
+import { mergeTheme } from './Theme'
 
 /** 蓝色系 */
-export const blueGray = Theme.mergeTheme({
+export const blueGray = mergeTheme({
   lineColor: '#4A51D9',
   lineStyle: 'straight',
   generalizationLineColor: '#4A51D9',

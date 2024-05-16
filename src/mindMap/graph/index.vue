@@ -10,9 +10,17 @@
     <g transform="rotate(0) translate(0 0) scale(1)">
       <g class="g-boundary"></g>
       <g class="g-associative-lines"></g>
-      <g class="g-lines"></g>
+
       <g class="g-nodes">
-        <NodeItem v-for="item in listNode" :key="item.id" :node="item" />
+        <NodeItem v-for="item in serverNodeList" :key="item.id" :node="item" />
+      </g>
+      <g class="g-lines">
+        <LineItem
+          v-for="(item, index) in rectNodeList"
+          :key="item.id"
+          :prevNode="rectNodeList[index - 1]"
+          :node="item"
+        />
       </g>
       <g class="g-associative-temp"></g>
       <g class="g-associative-text"></g>
@@ -28,8 +36,10 @@ export default {
 </script>
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
-import type { PropType } from 'vue'
+import { storeToRefs } from 'pinia'
 import NodeItem from './NodeItem.vue'
+import LineItem from './LineItem.vue'
+import { useMindMapStore, useNodeRectStore } from '@/store'
 
 defineProps({
   /** 宽度 */
@@ -41,13 +51,14 @@ defineProps({
   height: {
     type: Number,
     required: true
-  },
-  /** 状态 */
-  listNode: {
-    type: Array as PropType<ITreeNode[]>,
-    required: true
   }
 })
+
+const mindMapStore = useMindMapStore()
+const { serverNodeList } = storeToRefs(mindMapStore)
+
+const nodeRectStore = useNodeRectStore()
+const { rectNodeList } = storeToRefs(nodeRectStore)
 
 function clipboard() {
   navigator.clipboard.read().then((res) => {

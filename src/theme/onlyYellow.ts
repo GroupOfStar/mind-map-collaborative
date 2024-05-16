@@ -1,7 +1,7 @@
-import { Theme } from './Theme'
+import { mergeTheme } from './Theme'
 
 /** 护眼 */
-export const onlyYellow = Theme.mergeTheme({
+export const onlyYellow = mergeTheme({
   lineColor: '#837A5C',
   lineStyle: 'direct',
   generalizationLineWidth: 3,

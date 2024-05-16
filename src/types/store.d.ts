@@ -39,7 +39,5 @@ interface INodeRectState {
   /** 布局类型 */
   layout: ILayoutType
   /** 主题类型 */
-  theme: import('@/theme/Theme').Theme
-  /** 当前节点id */
-  // currentId?: IServiceNode['id']
+  theme: import('@/theme/Theme').Theme<INodeTheme>
 }

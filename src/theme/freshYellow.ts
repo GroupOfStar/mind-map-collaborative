@@ -1,7 +1,7 @@
-import { Theme } from './Theme'
+import { mergeTheme } from './Theme'
 
 /** 复古 */
-export const freshYellow: ITheme = Theme.mergeTheme({
+export const freshYellow: ITheme = mergeTheme({
   lineColor: '#FFBC9E',
   lineStyle: 'curve',
   generalizationLineColor: '#026D77',

@@ -4,8 +4,8 @@ import { useNodeRectStore } from './nodeRect'
 import { listToTree, treeToList } from '@/utils/transform'
 
 export const useMindMapStore = defineStore('mindMap', () => {
-  /** state */
-  const listNode = ref<ITreeNode[]>([])
+  /** 服务数据NodeList */
+  const serverNodeList = ref<ITreeNode[]>([])
 
   const nodeRectStore = useNodeRectStore()
 
@@ -17,8 +17,8 @@ export const useMindMapStore = defineStore('mindMap', () => {
       nodes.map<ITreeNode>((item) => ({ ...item, depth: 0, children: [] })),
       nodeRectStore.state.rootNodeId
     )[0]
-    listNode.value = rootTreeNode ? treeToList(rootTreeNode) : []
+    serverNodeList.value = rootTreeNode ? treeToList(rootTreeNode) : []
   }
 
-  return { listNode, setupData }
+  return { serverNodeList, setupData }
 })

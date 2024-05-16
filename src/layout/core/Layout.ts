@@ -28,7 +28,7 @@ export abstract class Layout<T extends ITreeNode> {
     return { x: this.option.getX(rootNode), y: minY }
   }
   /** 获取节点树的边界框 */
-  protected getBoundingBox(rootNode: T) {
+  public getBoundingBox(rootNode: T) {
     const bb = {
       left: Number.MAX_VALUE,
       top: Number.MAX_VALUE,

@@ -2,7 +2,6 @@ import { reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
 import * as Structure from './../layout/index'
 import { Theme } from '@/theme/Theme'
-import * as ThemeConfigs from '@/theme/index'
 import { listToTree, transformLayoutType, treeToList } from '@/utils/transform'
 
 export const useNodeRectStore = defineStore('nodeRect', () => {
@@ -11,7 +10,7 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     rootNodeId: undefined,
     nodes: [],
     layout: 'RightLogical',
-    theme: new Theme()
+    theme: new Theme<INodeTheme>()
   })
 
   /** 挂载数据 */
@@ -28,7 +27,8 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     const { layout, theme, children } = config
     state.rootNodeId = children[0]
     state.layout = transformLayoutType(layout)
-    state.theme.useTheme({ ...ThemeConfigs[theme.template], ...JSON.parse(theme.config) })
+
+    state.theme = new Theme<INodeTheme>(theme.template, JSON.parse(theme.config))
   }
 
   /** 修改本地视图数据 */
@@ -49,7 +49,7 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
   }
 
   /** 获取节点树类型的数据 */
-  const treeNode = computed(() => {
+  const rectNodeTree = computed(() => {
     const { nodes, rootNodeId, layout, theme } = state
     const rootTreeNode = listToTree(nodes, rootNodeId)[0]
     if (rootTreeNode) {
@@ -87,8 +87,8 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     }
   })
 
-  /** 获取平铺的节点list数据 */
-  const listNode = computed(() => (treeNode.value ? treeToList(treeNode.value) : []))
+  /** 视图数据NodeList */
+  const rectNodeList = computed(() => (rectNodeTree.value ? treeToList(rectNodeTree.value) : []))
 
   /** 获取当前节点的DOMRect */
   const getNodeClientRect = computed(() => (id: IServiceNode['id']) => {
@@ -97,9 +97,16 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
       y = 0,
       width = 0,
       height = 0
-    } = listNode.value.find((item) => item.id === id) || {}
+    } = rectNodeList.value.find((item) => item.id === id) || {}
     return { x, y, width, height }
   })
 
-  return { state, getNodeClientRect, setupData, setClientNodeAttr, setClientNodeAttrs }
+  return {
+    state,
+    getNodeClientRect,
+    rectNodeList,
+    setupData,
+    setClientNodeAttr,
+    setClientNodeAttrs
+  }
 })

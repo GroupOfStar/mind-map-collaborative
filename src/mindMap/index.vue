@@ -1,6 +1,14 @@
 <template>
-  <div class="container" ref="containerRef" :style="{ backgroundColor }">
-    <MindGraph :width="graphSize.width" :height="graphSize.height" :listNode="listNode" />
+  <div
+    class="container"
+    ref="containerRef"
+    :style="{ backgroundColor: state.theme.backgroundColor }"
+  >
+    <MindGraph
+      :width="graphSize.width"
+      :height="graphSize.height"
+      :serverNodeList="serverNodeList"
+    />
   </div>
 </template>
 
@@ -10,7 +18,6 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import MindGraph from './graph/index.vue'
 import { iframe } from '@/iframe'
@@ -21,13 +28,12 @@ import { useFullScreenSize } from './hooks'
 import { parseStringify } from '@/utils'
 
 const mindMapStore = useMindMapStore()
-const { listNode } = storeToRefs(mindMapStore)
+const { serverNodeList } = storeToRefs(mindMapStore)
 
 const nodeRectStore = useNodeRectStore()
+const { state } = storeToRefs(nodeRectStore)
 
 const { containerRef, graphSize } = useFullScreenSize()
-
-const backgroundColor = computed(() => nodeRectStore.state.theme.backgroundColor)
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg

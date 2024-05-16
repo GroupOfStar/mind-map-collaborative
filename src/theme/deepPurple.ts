@@ -1,7 +1,7 @@
-import { Theme } from './Theme'
+import { mergeTheme } from './Theme'
 
 /** 商务 */
-export const deepPurple = Theme.mergeTheme({
+export const deepPurple = mergeTheme({
   lineColor: '#534E96',
   generalizationLineColor: '#5E3295',
   backgroundColor: '#FFFFFF',

@@ -1,7 +1,7 @@
-import { Theme } from './Theme'
+import { mergeTheme } from './Theme'
 
 /** 简约 */
-export const simpleBlue = Theme.mergeTheme({
+export const simpleBlue = mergeTheme({
   lineColor: '#0D0D0D',
   lineStyle: 'straight',
   generalizationLineWidth: 1,
