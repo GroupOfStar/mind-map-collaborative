@@ -50,8 +50,8 @@ export function useScroll(graphSize: ComputedRef<ISize>) {
     const scrollWidth = containerSize.value.width * scaleX.value
     const scrollHeight = containerSize.value.height * scaleY.value
     return {
-      x: (graphPosition.x + graphSize.value.width / 2) / (1 - scaleX.value),
-      y: (graphPosition.y + graphSize.value.height / 2) / (1 - scaleY.value),
+      x: (graphPosition.x + graphSize.value.width / 2) * (1 - scaleX.value),
+      y: (graphPosition.y + graphSize.value.height / 2) * (1 - scaleY.value),
       width: scrollWidth,
       height: scrollHeight
     }

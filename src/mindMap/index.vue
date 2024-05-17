@@ -25,7 +25,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import MindGraph from './graph/index.vue'
 import ScrollBar from '@/components/ScrollBar/index.vue'
@@ -73,8 +73,19 @@ iframe.init().then((res) => {
   collaborativeInit(sdkMsg)
 })
 
+// 初次加载完后居中, 后面就不再执行
+const unwatch = watch(
+  [() => containerSize.value.width, () => graphRect.value.width],
+  ([cw, gw]) => {
+    if (cw > 0 && gw > 0) {
+      onGraphCenter()
+      unwatch()
+    }
+  }
+)
+
 onMounted(() => {
-  onGraphCenter()
+  // onGraphCenter()
 })
 </script>
 
