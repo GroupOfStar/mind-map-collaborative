@@ -17,6 +17,20 @@ interface IStatusEnum<T = string> {
 }
 
 /**
+ * 形状位置信息
+ */
+interface IRect {
+  /** 定位x */
+  x: number
+  /** 定位y */
+  y: number
+  /** 宽度 */
+  width: number
+  /** 高度 */
+  height: number
+}
+
+/**
  * Iframe的通信消息格式
  */
 interface IframeMessage {

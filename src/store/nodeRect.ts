@@ -48,47 +48,53 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     state.nodes = state.nodes.map((item) => (item.id === id ? { ...item, ...clientData } : item))
   }
 
-  /** 获取节点树类型的数据 */
-  const rectNodeTree = computed(() => {
+  /** 获取布局对象 */
+  const mindMapLayout = computed(() => {
     const { nodes, rootNodeId, layout, theme } = state
     const rootTreeNode = listToTree(nodes, rootNodeId)[0]
-    if (rootTreeNode) {
-      const layoutOption: Structure.ILayoutOption<IClientNode> = {
-        getWidth: (node) => {
-          const { selectedBorderPadding, selectedBorderWidth } = theme
-          const { paddingX, borderWidth } = theme.getStyles(node)
-          return (
-            node.width + (paddingX + borderWidth + selectedBorderPadding + selectedBorderWidth) * 2
-          )
-        },
-        getHeight: (node) => {
-          const { selectedBorderPadding, selectedBorderWidth } = theme
-          const { paddingY, borderWidth } = theme.getStyles(node)
-          return (
-            node.height + (paddingY + borderWidth + selectedBorderPadding + selectedBorderWidth) * 2
-          )
-        },
-        getHGap: (node) => theme.getStyles(node).marginX || 0,
-        getVGap: (node) => theme.getStyles(node).marginY || 0,
-        getX: (node) => node.x,
-        setX: (node, val) => {
-          node.x = val
-        },
-        getY: (node) => node.y,
-        setY: (node, val) => {
-          node.y = val
-        }
+    const layoutOption: Structure.ILayoutOption<IClientNode> = {
+      getWidth: (node) => {
+        const { selectedBorderPadding, selectedBorderWidth } = theme
+        const { paddingX, borderWidth } = theme.getStyles(node)
+        // svg的rect的宽度实际左右从边框的一半开始算的，所以这里没有*2
+        return (
+          node.width + (paddingX + borderWidth + selectedBorderPadding) * 2 + selectedBorderWidth
+        )
+      },
+      getHeight: (node) => {
+        const { selectedBorderPadding, selectedBorderWidth } = theme
+        const { paddingY, borderWidth } = theme.getStyles(node)
+        // svg的rect的宽度实际左右从边框的一半开始算的，所以这里没有*2
+        return (
+          node.height + (paddingY + borderWidth + selectedBorderPadding) * 2 + selectedBorderWidth
+        )
+      },
+      getHGap: (node) => theme.getStyles(node).marginX || 0,
+      getVGap: (node) => theme.getStyles(node).marginY || 0,
+      getX: (node) => node.x,
+      setX: (node, val) => {
+        node.x = val
+      },
+      getY: (node) => node.y,
+      setY: (node, val) => {
+        node.y = val
       }
-      const mindMapLayout = new Structure[layout](rootTreeNode, layoutOption)
-      const nodeTree = mindMapLayout.doLayout()
-      return nodeTree
-    } else {
-      return undefined
     }
+    return new Structure[layout](layoutOption, rootTreeNode)
   })
 
+  /** 获取画布大小 */
+  const graphSize = computed(() => {
+    const box = mindMapLayout.value.getBoundingBox()
+    console.log('box :>> ', box)
+    return { width: isNaN(box.width) ? 0 : box.width, height: isNaN(box.height) ? 0 : box.height }
+  })
+
+  /** 获取节点树类型的数据 */
+  const rectNodeTree = computed(() => mindMapLayout.value.doLayout())
+
   /** 视图数据NodeList */
-  const rectNodeList = computed(() => (rectNodeTree.value ? treeToList(rectNodeTree.value) : []))
+  const rectNodeList = computed(() => treeToList(rectNodeTree.value))
 
   /** 获取当前节点的DOMRect */
   const getNodeClientRect = computed(() => (id: IServiceNode['id']) => {
@@ -103,8 +109,9 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
 
   return {
     state,
-    getNodeClientRect,
+    graphSize,
     rectNodeList,
+    getNodeClientRect,
     setupData,
     setClientNodeAttr,
     setClientNodeAttrs

@@ -32,7 +32,7 @@ export function listToTree<T extends INode<{ id: string; pid: string; depth: num
 export function treeToList<T extends INode>(nodeTree: T): T[] {
   return nodeTree.children.reduce(
     (total, item) => [...total, ...(treeToList(item) as T[])],
-    [nodeTree]
+    [{ ...nodeTree }]
   )
 }
 

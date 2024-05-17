@@ -5,9 +5,9 @@ export abstract class Layout<T extends ITreeNode> {
   protected rootNode: T
   protected option: ILayoutOption<T>
 
-  constructor(rootNode: T, option: ILayoutOption<T>) {
-    this.rootNode = rootNode
+  constructor(option: ILayoutOption<T>, rootNode: T = { children: [] } as any) {
     this.option = option
+    this.rootNode = rootNode
   }
   /** 获取布局类型下的偏移量 */
   protected abstract get offset(): { offsetX: number; offsetY: number }
@@ -28,7 +28,7 @@ export abstract class Layout<T extends ITreeNode> {
     return { x: this.option.getX(rootNode), y: minY }
   }
   /** 获取节点树的边界框 */
-  public getBoundingBox(rootNode: T) {
+  public getBoundingBox(rootNode: T = this.rootNode) {
     const bb = {
       left: Number.MAX_VALUE,
       top: Number.MAX_VALUE,
@@ -36,18 +36,18 @@ export abstract class Layout<T extends ITreeNode> {
       height: 0
     }
     forScopeEachTree<T>((node) => {
-      const { getX, getY } = this.option
+      const { getX, getY, getWidth, getHeight } = this.option
       const x = getX(node)
       const y = getY(node)
-      // const width = getWidth(node);
-      // const height = getHeight(node);
+      const width = getWidth(node)
+      const height = getHeight(node)
 
       bb.left = Math.min(bb.left, x)
       bb.top = Math.min(bb.top, y)
-      // bb.width = Math.max(bb.width, x + width / 2);
-      // bb.height = Math.max(bb.height, y + height / 2);
-      bb.width = Math.max(bb.width, x)
-      bb.height = Math.max(bb.height, y)
+      bb.width = Math.max(bb.width, x + width)
+      bb.height = Math.max(bb.height, y + height)
+      // bb.width = Math.max(bb.width, x)
+      // bb.height = Math.max(bb.height, y)
     }, rootNode)
     return bb
   }

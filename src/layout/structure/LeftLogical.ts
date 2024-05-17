@@ -1,4 +1,5 @@
 import { Layout, nonLayeredTidyTree, WrappedTree } from './../core'
+import type { ITreeNode } from '../interface'
 
 export class LeftLogical<T extends ITreeNode> extends Layout<T> {
   protected get offset() {

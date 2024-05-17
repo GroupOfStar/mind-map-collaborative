@@ -5,10 +5,18 @@
     :style="{ backgroundColor: state.theme.backgroundColor }"
   >
     <MindGraph
-      :width="graphSize.width"
-      :height="graphSize.height"
+      :width="containerSize.width"
+      :height="containerSize.height"
+      :graphRect="graphRect"
       :serverNodeList="serverNodeList"
+      :rectNodeList="rectNodeList"
     />
+    <ScrollBar
+      :width="containerSize.width"
+      :height="containerSize.height"
+      :scrollRect="scrollRect"
+    />
+    {{ console.log('graphSize :>> ', graphSize.width, graphSize.height) }}
   </div>
 </template>
 
@@ -18,22 +26,26 @@ export default {
 }
 </script>
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import MindGraph from './graph/index.vue'
+import ScrollBar from '@/components/ScrollBar/index.vue'
 import { iframe } from '@/iframe'
 import { collaborate } from '@/service'
 import type { ICollaborativeOpt } from '@/service'
 import { useMindMapStore, useNodeRectStore } from '@/store'
-import { useFullScreenSize } from './hooks'
+import { useScroll } from './hooks'
 import { parseStringify } from '@/utils'
 
 const mindMapStore = useMindMapStore()
 const { serverNodeList } = storeToRefs(mindMapStore)
 
 const nodeRectStore = useNodeRectStore()
-const { state } = storeToRefs(nodeRectStore)
+const { state, rectNodeList, graphSize } = storeToRefs(nodeRectStore)
 
-const { containerRef, graphSize } = useFullScreenSize()
+const containerRef = ref<HTMLDivElement>()
+
+const { containerSize, graphRect, scrollRect, onGraphCenter } = useScroll(containerRef, graphSize)
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg
@@ -63,11 +75,16 @@ iframe.init().then((res) => {
   console.log('iframe nodeTree :>> ', parseStringify(data, 'parse'))
   collaborativeInit(sdkMsg)
 })
+
+onMounted(() => {
+  onGraphCenter()
+})
 </script>
 
 <style lang="less" scoped>
 .container {
   position: absolute;
   inset: 0;
+  overflow: hidden;
 }
 </style>

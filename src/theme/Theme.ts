@@ -79,7 +79,7 @@ export class Theme<T extends Partial<INodeTheme>> implements ITheme<T> {
   //   return ['LeftLogical', 'RightLogical', 'Standard'].indexOf(this.layout) > -1
   // }
   /** 获取服务端节点样式，如果没有，返回当前主题的默认样式 */
-  public getStyles(node: IClientNode): Required<T> {
+  public getStyles<K extends ITreeNode>(node: K): Required<T> {
     switch (node.depth) {
       case 0:
         return { ...this.root, ...node }

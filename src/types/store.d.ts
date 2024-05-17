@@ -6,15 +6,7 @@ type IClientNode = INode<
   Omit<IServiceNode, 'children'> & {
     /** 深度 0表示根节点 */
     depth: number
-    /** 宽度 */
-    width: number
-    /** 高度 */
-    height: number
-    /** 定位x */
-    x: number
-    /** 定位y */
-    y: number
-  }
+  } & IRect
 >
 
 type ITreeNode = INode<
