@@ -2,8 +2,8 @@ import { forScopeEachTree } from './utils'
 import type { ITreeNode, ILayoutOption } from '../interface'
 
 export abstract class Layout<T extends ITreeNode> {
-  protected rootNode: T
   protected option: ILayoutOption<T>
+  protected rootNode: T
 
   constructor(option: ILayoutOption<T>, rootNode: T = { children: [] } as any) {
     this.option = option
@@ -28,7 +28,7 @@ export abstract class Layout<T extends ITreeNode> {
     return { x: this.option.getX(rootNode), y: minY }
   }
   /** 获取节点树的边界框 */
-  public getBoundingBox(rootNode: T = this.rootNode) {
+  public getBoundingBox(rootNode: T) {
     const bb = {
       left: Number.MAX_VALUE,
       top: Number.MAX_VALUE,

@@ -24,8 +24,14 @@
       <g class="g-associative-temp"></g>
       <g class="g-associative-text"></g>
       <g class="g-associative-controller"></g>
-      <circle :cx="graphRect.width / 2" :cy="graphRect.height / 2" r="10" fill="red" />
-      {{ console.log('graphRect :>> ', graphRect.width, graphRect.height) }}
+      <circle
+        :cx="graphRect.width / 2"
+        :cy="graphRect.height / 2"
+        r="10"
+        fill="white"
+        stroke="red"
+        stroke-width="18"
+      />
     </g>
   </svg>
 </template>

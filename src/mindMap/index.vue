@@ -16,7 +16,6 @@
       :height="containerSize.height"
       :scrollRect="scrollRect"
     />
-    {{ console.log('graphSize :>> ', graphSize.width, graphSize.height) }}
   </div>
 </template>
 
@@ -26,7 +25,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import MindGraph from './graph/index.vue'
 import ScrollBar from '@/components/ScrollBar/index.vue'
@@ -43,9 +42,7 @@ const { serverNodeList } = storeToRefs(mindMapStore)
 const nodeRectStore = useNodeRectStore()
 const { state, rectNodeList, graphSize } = storeToRefs(nodeRectStore)
 
-const containerRef = ref<HTMLDivElement>()
-
-const { containerSize, graphRect, scrollRect, onGraphCenter } = useScroll(containerRef, graphSize)
+const { containerRef, containerSize, graphRect, scrollRect, onGraphCenter } = useScroll(graphSize)
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg

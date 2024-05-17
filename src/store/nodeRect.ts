@@ -83,15 +83,14 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     return new Structure[layout](layoutOption, rootTreeNode)
   })
 
-  /** 获取画布大小 */
-  const graphSize = computed(() => {
-    const box = mindMapLayout.value.getBoundingBox()
-    console.log('box :>> ', box)
-    return { width: isNaN(box.width) ? 0 : box.width, height: isNaN(box.height) ? 0 : box.height }
-  })
-
   /** 获取节点树类型的数据 */
   const rectNodeTree = computed(() => mindMapLayout.value.doLayout())
+
+  /** 获取画布大小 */
+  const graphSize = computed(() => {
+    const box = mindMapLayout.value.getBoundingBox(rectNodeTree.value)
+    return { width: isNaN(box.width) ? 0 : box.width, height: isNaN(box.height) ? 0 : box.height }
+  })
 
   /** 视图数据NodeList */
   const rectNodeList = computed(() => treeToList(rectNodeTree.value))
@@ -109,6 +108,7 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
 
   return {
     state,
+    mindMapLayout,
     graphSize,
     rectNodeList,
     getNodeClientRect,

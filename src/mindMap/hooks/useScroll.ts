@@ -1,5 +1,5 @@
-import { reactive, computed, onMounted, onUnmounted, ref } from 'vue'
-import type { Ref, ComputedRef } from 'vue'
+import { ref, reactive, computed, onMounted, onUnmounted } from 'vue'
+import type { ComputedRef } from 'vue'
 import { useElementSize } from './useElementSize'
 
 interface ISize {
@@ -7,8 +7,10 @@ interface ISize {
   height: number
 }
 
-export function useScroll(elRef: Ref<HTMLDivElement | undefined>, graphSize: ComputedRef<ISize>) {
-  const { size: containerSize } = useElementSize(elRef)
+export function useScroll(graphSize: ComputedRef<ISize>) {
+  const containerRef = ref<HTMLDivElement>()
+
+  const { size: containerSize } = useElementSize(containerRef)
 
   const isRightMousedown = ref(false)
   const graphPosition = reactive({ x: 0, y: 0 })
@@ -65,7 +67,7 @@ export function useScroll(elRef: Ref<HTMLDivElement | undefined>, graphSize: Com
         break
       case 2:
         isRightMousedown.value = true
-        elRef.value!.style.cursor = 'grab'
+        containerRef.value!.style.cursor = 'grab'
         break
     }
   }
@@ -74,7 +76,7 @@ export function useScroll(elRef: Ref<HTMLDivElement | undefined>, graphSize: Com
   function onMousemove(ev: MouseEvent) {
     ev.stopPropagation()
     if (isRightMousedown.value) {
-      elRef.value!.style.cursor = 'grabbing'
+      containerRef.value!.style.cursor = 'grabbing'
       const { movementX, movementY } = ev
       // 边界点
       const startX = -graphSize.value.width / 2
@@ -93,7 +95,7 @@ export function useScroll(elRef: Ref<HTMLDivElement | undefined>, graphSize: Com
   // 鼠标松开事件, 清除状态
   function onMouseup(ev: MouseEvent) {
     ev.stopPropagation()
-    elRef.value!.style.cursor = 'default'
+    containerRef.value!.style.cursor = 'default'
     isRightMousedown.value = false
   }
 
@@ -110,21 +112,27 @@ export function useScroll(elRef: Ref<HTMLDivElement | undefined>, graphSize: Com
   }
 
   onMounted(() => {
-    if (elRef.value) {
-      elRef.value.addEventListener('mousedown', onMousedown)
-      elRef.value.addEventListener('mousemove', onMousemove)
-      elRef.value.addEventListener('mouseup', onMouseup)
-      elRef.value.addEventListener('contextmenu', onContextmenu)
+    if (containerRef.value) {
+      containerRef.value.addEventListener('mousedown', onMousedown)
+      containerRef.value.addEventListener('mousemove', onMousemove)
+      containerRef.value.addEventListener('mouseup', onMouseup)
+      containerRef.value.addEventListener('contextmenu', onContextmenu)
     }
   })
   onUnmounted(() => {
-    if (elRef.value) {
-      elRef.value.removeEventListener('mousedown', onMousedown)
-      elRef.value.removeEventListener('mousemove', onMousemove)
-      elRef.value.removeEventListener('mouseup', onMouseup)
-      elRef.value.removeEventListener('contextmenu', onContextmenu)
+    if (containerRef.value) {
+      containerRef.value.removeEventListener('mousedown', onMousedown)
+      containerRef.value.removeEventListener('mousemove', onMousemove)
+      containerRef.value.removeEventListener('mouseup', onMouseup)
+      containerRef.value.removeEventListener('contextmenu', onContextmenu)
     }
   })
 
-  return { containerSize, graphRect, scrollRect, onGraphCenter }
+  return {
+    containerRef,
+    containerSize,
+    graphRect,
+    scrollRect,
+    onGraphCenter
+  }
 }
