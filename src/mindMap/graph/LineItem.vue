@@ -1,7 +1,7 @@
 <template>
   <!-- d="M2135.5 685.5C2106.5 685.5 2106.5 764.25 2077.5 764.25 " -->
   <path
-    v-if="!!prevNode"
+    v-if="!!beginNode"
     :d="path"
     fill="none"
     stroke-width="2"
@@ -22,13 +22,13 @@ import type { PropType } from 'vue'
 import { useNodeRectStore } from '@/store'
 
 const props = defineProps({
-  /** 前一个节点 */
-  prevNode: {
+  /** 开始节点 */
+  beginNode: {
     type: Object as PropType<IClientNode>,
     required: false
   },
-  /** 节点 */
-  node: {
+  /** 结束节点 */
+  endNode: {
     type: Object as PropType<IClientNode>,
     required: true
   }
@@ -37,7 +37,7 @@ const props = defineProps({
 const nodeRectStore = useNodeRectStore()
 
 const theme = computed(() => nodeRectStore.state.theme)
-const nodeStyle = computed(() => theme.value.getStyles(props.node))
+const nodeStyle = computed(() => theme.value.getStyles(props.endNode))
 
 /**
  * 二次贝塞尔曲线
@@ -60,8 +60,8 @@ function quadraticCurvePath(edgePoint: {
 }
 
 const path = computed(() => {
-  const beginNode = props.prevNode || { x: 0, y: 0, width: 0, height: 0 }
-  const endNode = props.node
+  const beginNode = props.beginNode || { x: 0, y: 0, width: 0, height: 0 }
+  const endNode = props.endNode
   const beginX = beginNode.x + beginNode.width
   const beginY = beginNode.y + beginNode.height / 2
   const endX = endNode.x

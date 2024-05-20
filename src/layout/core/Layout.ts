@@ -2,6 +2,8 @@ import { forScopeEachTree } from './utils'
 import type { ITreeNode, ILayoutOption } from '../interface'
 
 export abstract class Layout<T extends ITreeNode> {
+  /** 是否为水平方向 */
+  public abstract isHorizontal: boolean
   protected option: ILayoutOption<T>
   protected rootNode: T
 

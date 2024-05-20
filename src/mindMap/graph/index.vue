@@ -10,16 +10,16 @@
     <g :transform="`rotate(0) translate(${graphRect.x}, ${graphRect.y}) scale(1)`">
       <g class="g-boundary"></g>
       <g class="g-associative-lines"></g>
-      <g class="g-lines">
-        <LineItem
-          v-for="(item, index) in rectNodeList"
-          :key="item.id"
-          :prevNode="rectNodeList[index - 1]"
-          :node="item"
-        />
-      </g>
       <g class="g-nodes">
         <NodeItem v-for="item in serverNodeList" :key="item.id" :node="item" />
+      </g>
+      <g class="g-lines">
+        <LineItem
+          v-for="item in edgeNodeList"
+          :key="item.beginNode.id + item.endNode.id"
+          :beginNode="item.beginNode"
+          :endNode="item.endNode"
+        />
       </g>
       <g class="g-associative-temp"></g>
       <g class="g-associative-text"></g>
@@ -65,6 +65,11 @@ defineProps({
   /** 视图数据NodeList */
   rectNodeList: {
     type: Array as PropType<IClientNode[]>,
+    required: true
+  },
+  /** 连线list */
+  edgeNodeList: {
+    type: Array as PropType<IEdgeNode[]>,
     required: true
   }
 })

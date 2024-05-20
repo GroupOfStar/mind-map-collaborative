@@ -13,6 +13,7 @@
       :graphRect="graphRect"
       :serverNodeList="serverNodeList"
       :rectNodeList="rectNodeList"
+      :edgeNodeList="edgeNodeList"
     />
     <ScrollBar
       :width="container.containerRect.width"
@@ -47,7 +48,7 @@ const mindMapStore = useMindMapStore()
 const { serverNodeList } = storeToRefs(mindMapStore)
 
 const nodeRectStore = useNodeRectStore()
-const { state, rectNodeList, graphSize } = storeToRefs(nodeRectStore)
+const { state, rectNodeList, graphSize, edgeNodeList } = storeToRefs(nodeRectStore)
 
 const { graphRect, setGraphPosition } = useGraphScroll(graphSize)
 const container = useContainer(containerRef, graphRect, setGraphPosition)

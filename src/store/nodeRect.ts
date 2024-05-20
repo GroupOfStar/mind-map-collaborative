@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import * as Structure from './../layout/index'
 import { Theme } from '@/theme/Theme'
 import { listToTree, transformLayoutType, treeToList } from '@/utils/transform'
+import { forScopeEachTree } from '@/layout/core/utils'
 
 export const useNodeRectStore = defineStore('nodeRect', () => {
   /** state */
@@ -48,10 +49,9 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     state.nodes = state.nodes.map((item) => (item.id === id ? { ...item, ...clientData } : item))
   }
 
-  /** 获取布局对象 */
-  const mindMapLayout = computed(() => {
-    const { nodes, rootNodeId, layout, theme } = state
-    const rootTreeNode = listToTree(nodes, rootNodeId)[0]
+  /** 获取布局配置 */
+  const layoutOption = computed(() => {
+    const { theme } = state
     const layoutOption: Structure.ILayoutOption<IClientNode> = {
       getWidth: (node) => {
         const { selectedBorderPadding, selectedBorderWidth } = theme
@@ -80,16 +80,56 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
         node.y = val
       }
     }
-    return new Structure[layout](layoutOption, rootTreeNode)
+    return layoutOption
+  })
+
+  /** 获取布局对象 */
+  const mindMapLayout = computed(() => {
+    const { nodes, rootNodeId, layout } = state
+    const rootTreeNode = listToTree(nodes, rootNodeId)[0]
+    return new Structure[layout](layoutOption.value, rootTreeNode)
   })
 
   /** 获取节点树类型的数据 */
-  const rectNodeTree = computed(() => mindMapLayout.value.doLayout())
+  const rectNodeTree = computed<IClientNode>(() => mindMapLayout.value.doLayout())
 
   /** 获取画布大小 */
   const graphSize = computed(() => {
     const box = mindMapLayout.value.getBoundingBox(rectNodeTree.value)
     return { width: isNaN(box.width) ? 0 : box.width, height: isNaN(box.height) ? 0 : box.height }
+  })
+
+  /** 连线list */
+  const edgeNodeList = computed<IEdgeNode[]>(() => {
+    const lines: IEdgeNode[] = []
+    const { getX, getY } = layoutOption.value
+    const { isHorizontal } = mindMapLayout.value
+    forScopeEachTree((node) => {
+      node.children.forEach((child) => {
+        let beginNode: IClientNode
+        let endNode: IClientNode
+        // 水平节点布局
+        if (isHorizontal) {
+          if (getX(child) > getX(node)) {
+            beginNode = child
+            endNode = node
+          } else {
+            beginNode = node
+            endNode = child
+          }
+        } else {
+          if (getY(child) > getY(node)) {
+            beginNode = child
+            endNode = node
+          } else {
+            beginNode = node
+            endNode = child
+          }
+        }
+        lines.push({ beginNode, endNode })
+      })
+    }, rectNodeTree.value)
+    return lines
   })
 
   /** 视图数据NodeList */
@@ -110,6 +150,7 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     state,
     mindMapLayout,
     graphSize,
+    edgeNodeList,
     rectNodeList,
     getNodeClientRect,
     setupData,

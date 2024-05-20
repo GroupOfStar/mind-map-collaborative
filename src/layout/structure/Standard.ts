@@ -2,6 +2,8 @@ import { Layout, nonLayeredTidyTree, WrappedTree } from './../core'
 import type { ITreeNode } from '../interface'
 
 export class Standard<T extends ITreeNode> extends Layout<T> {
+  public isHorizontal = true
+
   protected get offset() {
     return {
       offsetX: window.innerWidth / 2,
