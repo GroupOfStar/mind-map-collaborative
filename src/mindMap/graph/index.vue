@@ -3,8 +3,8 @@
     xmlns="http://www.w3.org/2000/svg"
     version="1.1"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    :width="width"
-    :height="height"
+    :width="containerRect.width"
+    :height="containerRect.height"
     style="display: block"
   >
     <g :transform="`rotate(0) translate(${graphRect.x}, ${graphRect.y}) scale(1)`">
@@ -47,14 +47,9 @@ import NodeItem from './NodeItem.vue'
 import LineItem from './LineItem.vue'
 
 defineProps({
-  /** 画布宽度 */
-  width: {
-    type: Number,
-    required: true
-  },
-  /** 画布高度 */
-  height: {
-    type: Number,
+  /** container画布图形位置信息 */
+  containerRect: {
+    type: Object as PropType<IRect>,
     required: true
   },
   /** graph图形位置信息 */

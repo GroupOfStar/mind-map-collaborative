@@ -3,18 +3,22 @@
     class="container"
     ref="containerRef"
     :style="{ backgroundColor: state.theme.backgroundColor }"
+    @mousedown="container.onMousedown"
+    @mousemove="container.onMousemove"
+    @mouseup="container.onMouseup"
+    @contextmenu="container.onContextmenu"
   >
     <MindGraph
-      :width="containerSize.width"
-      :height="containerSize.height"
+      :containerRect="container.containerRect"
       :graphRect="graphRect"
       :serverNodeList="serverNodeList"
       :rectNodeList="rectNodeList"
     />
     <ScrollBar
-      :width="containerSize.width"
-      :height="containerSize.height"
-      :scrollRect="scrollRect"
+      :width="container.containerRect.width"
+      :height="container.containerRect.height"
+      :scrollX="scrollX"
+      :scrollY="scrollY"
     />
   </div>
 </template>
@@ -25,7 +29,7 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import MindGraph from './graph/index.vue'
 import ScrollBar from '@/components/ScrollBar/index.vue'
@@ -33,8 +37,11 @@ import { iframe } from '@/iframe'
 import { collaborate } from '@/service'
 import type { ICollaborativeOpt } from '@/service'
 import { useMindMapStore, useNodeRectStore } from '@/store'
-import { useScroll } from './hooks'
+import { useGraphScroll, useBarScroll, useContainer } from './hooks'
 import { parseStringify } from '@/utils'
+
+/** 容器ref */
+const containerRef = ref<HTMLDivElement>()
 
 const mindMapStore = useMindMapStore()
 const { serverNodeList } = storeToRefs(mindMapStore)
@@ -42,7 +49,26 @@ const { serverNodeList } = storeToRefs(mindMapStore)
 const nodeRectStore = useNodeRectStore()
 const { state, rectNodeList, graphSize } = storeToRefs(nodeRectStore)
 
-const { containerRef, containerSize, graphRect, scrollRect, onGraphCenter } = useScroll(graphSize)
+const { graphRect, setGraphPosition } = useGraphScroll(graphSize)
+const container = useContainer(containerRef, graphRect, setGraphPosition)
+const scrollX = useBarScroll(
+  computed(() => ({
+    type: 'horizontal',
+    graphOffset: graphRect.value.x,
+    graphSize: graphRect.value.width,
+    containerSize: container.containerRect.width,
+    setGraphPosition
+  }))
+)
+const scrollY = useBarScroll(
+  computed(() => ({
+    type: 'vertical',
+    graphOffset: graphRect.value.y,
+    graphSize: graphRect.value.height,
+    containerSize: container.containerRect.height,
+    setGraphPosition
+  }))
+)
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg
@@ -73,19 +99,31 @@ iframe.init().then((res) => {
   collaborativeInit(sdkMsg)
 })
 
-// 初次加载完后居中, 后面就不再执行
-const unwatch = watch(
-  [() => containerSize.value.width, () => graphRect.value.width],
-  ([cw, gw]) => {
-    if (cw > 0 && gw > 0) {
-      onGraphCenter()
-      unwatch()
-    }
-  }
-)
+function onWindowResize() {
+  container.onResize()
+  container.onGraphCenter()
+}
+
+function onDocumentMousemove(ev: MouseEvent) {
+  scrollX.onMousemove(ev)
+  scrollY.onMousemove(ev)
+}
+
+function onDocumentMouseup(ev: MouseEvent) {
+  scrollX.onMouseup(ev)
+  scrollY.onMouseup(ev)
+}
 
 onMounted(() => {
-  // onGraphCenter()
+  onWindowResize()
+  window.addEventListener('resize', onWindowResize)
+  document.addEventListener('mousemove', onDocumentMousemove)
+  document.addEventListener('mouseup', onDocumentMouseup)
+})
+onUnmounted(() => {
+  window.removeEventListener('resize', onWindowResize)
+  document.removeEventListener('mousemove', onDocumentMousemove)
+  document.removeEventListener('mouseup', onDocumentMouseup)
 })
 </script>
 
