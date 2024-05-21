@@ -30,6 +30,7 @@ export function useContainer(
     switch (ev.button) {
       case 0:
       case 1:
+        console.log('ev.button :>> ', ev.button)
         break
       case 2:
         ev.stopPropagation()
@@ -39,24 +40,36 @@ export function useContainer(
     }
   }
 
+  /** 图形滚动 */
+  function handleGraphMove(movementX: number, movementY: number) {
+    let newPositionX = graphRect.value.x + movementX
+    let newPositionY = graphRect.value.y + movementY
+    // 边界点
+    const startX = -graphRect.value.width / 2
+    const startY = -graphRect.value.height / 2
+    const endX = containerRect.width - graphRect.value.width / 2
+    const endY = containerRect.height - graphRect.value.height / 2
+    if (newPositionX <= startX) {
+      newPositionX = startX
+    } else if (newPositionX >= endX) {
+      newPositionX = endX
+    }
+    setGraphPosition({ x: newPositionX })
+
+    if (newPositionY <= startY) {
+      newPositionY = startY
+    } else if (newPositionY >= endY) {
+      newPositionY = endY
+    }
+    setGraphPosition({ y: newPositionY })
+  }
+
   /** 鼠标移动事件 */
   function onMousemove(ev: MouseEvent) {
     if (isRightMousedown.value) {
       ev.stopPropagation()
       setContainerCursor('grabbing')
-      const newPositionX = graphRect.value.x + ev.movementX
-      const newPositionY = graphRect.value.y + ev.movementY
-      // 边界点
-      const startX = -graphRect.value.width / 2
-      const startY = -graphRect.value.height / 2
-      const endX = containerRect.width - graphRect.value.width / 2
-      const endY = containerRect.height - graphRect.value.height / 2
-      if (newPositionX > startX && newPositionX < endX) {
-        setGraphPosition({ x: newPositionX })
-      }
-      if (newPositionY > startY && newPositionY < endY) {
-        setGraphPosition({ y: newPositionY })
-      }
+      handleGraphMove(ev.movementX, ev.movementY)
     }
   }
 
@@ -66,6 +79,17 @@ export function useContainer(
       ev.stopPropagation()
       setContainerCursor('default')
       isRightMousedown.value = false
+    }
+  }
+
+  /** 鼠标滚轮事件 */
+  function onWheel(ev: WheelEvent) {
+    ev.preventDefault()
+    ev.stopPropagation()
+    if (ev.shiftKey) {
+      handleGraphMove(-ev.deltaY, 0)
+    } else {
+      handleGraphMove(0, -ev.deltaY)
     }
   }
 
@@ -97,6 +121,7 @@ export function useContainer(
     onMousedown,
     onMousemove,
     onMouseup,
+    onWheel,
     onContextmenu,
     onResize,
     onGraphCenter

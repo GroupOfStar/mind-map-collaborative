@@ -7,6 +7,7 @@
     @mousemove="container.onMousemove"
     @mouseup="container.onMouseup"
     @contextmenu="container.onContextmenu"
+    @wheel="container.onWheel"
   >
     <MindGraph
       :containerRect="container.containerRect"
