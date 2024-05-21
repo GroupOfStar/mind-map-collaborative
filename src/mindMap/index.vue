@@ -3,11 +3,12 @@
     class="container"
     ref="containerRef"
     :style="{ backgroundColor: state.theme.backgroundColor }"
-    @mousedown="container.onMousedown"
-    @mousemove="container.onMousemove"
-    @mouseup="container.onMouseup"
+    @mousedown="onContainerMousedown"
+    @mousemove="onContainerMousemove"
+    @mouseup="onContainerMouseup"
     @contextmenu="container.onContextmenu"
     @wheel="container.onWheel"
+    @click="selection.handleActiveCancel"
   >
     <MindGraph
       :containerRect="container.containerRect"
@@ -15,6 +16,9 @@
       :serverNodeList="serverNodeList"
       :rectNodeList="rectNodeList"
       :edgeNodeList="edgeNodeList"
+      :activeNode="selection.activeNode"
+      :onNodeClick="selection.onNodeClick"
+      :points="selection.points.value"
     />
     <ScrollBar
       :width="container.containerRect.width"
@@ -39,7 +43,7 @@ import { iframe } from '@/iframe'
 import { collaborate } from '@/service'
 import type { ICollaborativeOpt } from '@/service'
 import { useMindMapStore, useNodeRectStore } from '@/store'
-import { useGraphScroll, useBarScroll, useContainer } from './hooks'
+import { useGraphScroll, useBarScroll, useContainer, useSelection } from './hooks'
 import { parseStringify } from '@/utils'
 
 /** 容器ref */
@@ -72,6 +76,9 @@ const scrollY = useBarScroll(
   }))
 )
 
+/** 节点选择 */
+const selection = useSelection()
+
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg
   const option: ICollaborativeOpt = {
@@ -101,10 +108,25 @@ iframe.init().then((res) => {
   collaborativeInit(sdkMsg)
 })
 
+function onContainerMousedown(ev: MouseEvent) {
+  container.onMousedown(ev)
+  selection.onMousedown(ev)
+}
+function onContainerMousemove(ev: MouseEvent) {
+  container.onMousemove(ev)
+  selection.onMousemove(ev)
+}
+function onContainerMouseup(ev: MouseEvent) {
+  container.onMouseup(ev)
+  selection.onMouseup(ev)
+}
+
 function onWindowResize() {
   container.onResize()
   container.onGraphCenter()
 }
+
+function onDocumentMousedown(ev: MouseEvent) {}
 
 function onDocumentMousemove(ev: MouseEvent) {
   scrollX.onMousemove(ev)
@@ -119,11 +141,13 @@ function onDocumentMouseup(ev: MouseEvent) {
 onMounted(() => {
   onWindowResize()
   window.addEventListener('resize', onWindowResize)
+  document.addEventListener('mousedown', onDocumentMousedown)
   document.addEventListener('mousemove', onDocumentMousemove)
   document.addEventListener('mouseup', onDocumentMouseup)
 })
 onUnmounted(() => {
   window.removeEventListener('resize', onWindowResize)
+  document.removeEventListener('mousedown', onDocumentMousedown)
   document.removeEventListener('mousemove', onDocumentMousemove)
   document.removeEventListener('mouseup', onDocumentMouseup)
 })

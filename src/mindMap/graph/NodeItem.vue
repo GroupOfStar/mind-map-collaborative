@@ -3,10 +3,10 @@
     :id="node.id"
     class="node-wrapper"
     :transform="`matrix(1,0,0,1,${nodeRect.x + theme.selectedBorderPadding + theme.selectedBorderWidth},${nodeRect.y + theme.selectedBorderPadding + theme.selectedBorderWidth})`"
-    @click="(ev) => selection.onClick(ev, node)"
+    @click="(ev) => onNodeClick(ev, node)"
   >
     <rect
-      :class="['node-border', { active: selection.activeNode.value?.id === node.id }]"
+      :class="['node-border', { active: activeNode.value?.id === node.id }]"
       :width="
         nodeRect.width +
         (nodeStyle.paddingX + theme.selectedBorderPadding + nodeStyle.borderWidth) * 2 +
@@ -62,6 +62,7 @@
       :height="nodeRect.height"
       :x="nodeStyle.paddingX + nodeStyle.borderWidth"
       :y="nodeStyle.paddingY + nodeStyle.borderWidth"
+      @mousedown.stop
     >
       <div class="node-all-dom">
         <div class="text-img-dom">
@@ -98,10 +99,9 @@ export default {
 </script>
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import type { PropType } from 'vue'
+import type { Ref, PropType } from 'vue'
 import { getSizeByElement } from './../utils/'
 import { useNodeRectStore } from '@/store'
-import type { ISelection } from '../hooks/interface'
 
 const props = defineProps({
   /** 节点 */
@@ -109,9 +109,14 @@ const props = defineProps({
     type: Object as PropType<ITreeNode>,
     required: true
   },
-  /** 节点选择 */
-  selection: {
-    type: Object as PropType<ISelection>,
+  /** 激活的节点 */
+  activeNode: {
+    type: Object as PropType<Ref<ITreeNode | undefined>>,
+    required: true
+  },
+  /** 节点点击 */
+  onNodeClick: {
+    type: Function as PropType<(ev: MouseEvent, node?: ITreeNode) => void>,
     required: true
   }
 })

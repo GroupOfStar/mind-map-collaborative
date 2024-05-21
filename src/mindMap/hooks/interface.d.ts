@@ -1,5 +1,3 @@
-import type { Ref } from 'vue'
-
 /** 修改graph定位信息 */
 export type ISetGraphPosition = (position: Partial<Pick<IRect, 'x' | 'y'>>) => void
 
@@ -15,14 +13,4 @@ export interface IBarScrollOption {
   containerSize: number
   /** 修改graph定位信息 */
   setGraphPosition: ISetGraphPosition
-}
-
-/** 节点选择 */
-export interface ISelection {
-  /** 激活的节点 */
-  activeNode: Ref<ITreeNode | undefined>
-  /** 节点点击事件 */
-  onClick: (ev: MouseEvent, node?: ITreeNode) => void
-  /** 取消节点激活 */
-  handleActiveCancel: (ev: MouseEvent) => void
 }

@@ -24,21 +24,6 @@ export function useContainer(
     }
   }
 
-  /** 鼠标按下事件 */
-  function onMousedown(ev: MouseEvent) {
-    // 0表示左键, 1表示中键, 2表示右键
-    switch (ev.button) {
-      case 0:
-      case 1:
-        break
-      case 2:
-        ev.stopPropagation()
-        isRightMousedown.value = true
-        setContainerCursor('grab')
-        break
-    }
-  }
-
   /** 图形滚动 */
   function handleGraphMove(movementX: number, movementY: number) {
     let newPositionX = graphRect.value.x + movementX
@@ -61,6 +46,21 @@ export function useContainer(
       newPositionY = endY
     }
     setGraphPosition({ y: newPositionY })
+  }
+
+  /** 鼠标按下事件 */
+  function onMousedown(ev: MouseEvent) {
+    // 0表示左键, 1表示中键, 2表示右键
+    switch (ev.button) {
+      case 0:
+      case 1:
+        break
+      case 2:
+        ev.stopPropagation()
+        isRightMousedown.value = true
+        setContainerCursor('grab')
+        break
+    }
   }
 
   /** 鼠标移动事件 */

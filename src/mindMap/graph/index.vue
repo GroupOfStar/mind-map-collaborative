@@ -6,7 +6,6 @@
     :width="containerRect.width"
     :height="containerRect.height"
     style="display: block"
-    @click="selection.handleActiveCancel"
   >
     <g :transform="`rotate(0) translate(${graphRect.x}, ${graphRect.y}) scale(1)`">
       <g class="g-boundary"></g>
@@ -24,7 +23,8 @@
           v-for="item in serverNodeList"
           :key="item.id"
           :node="item"
-          :selection="selection"
+          :activeNode="activeNode"
+          :onNodeClick="onNodeClick"
         />
       </g>
       <g class="g-associative-temp"></g>
@@ -39,6 +39,7 @@
         stroke-width="18"
       />
     </g>
+    <polygon :points="points" stroke="#0984e3" fill="rgba(9,132,227,0.15)" />
   </svg>
 </template>
 
@@ -48,10 +49,10 @@ export default {
 }
 </script>
 <script setup lang="ts">
-import { onMounted, onUnmounted, type PropType } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
+import type { Ref, PropType } from 'vue'
 import NodeItem from './NodeItem.vue'
 import LineItem from './LineItem.vue'
-import { useSelection } from '../hooks'
 
 defineProps({
   /** container画布图形位置信息 */
@@ -78,11 +79,23 @@ defineProps({
   edgeNodeList: {
     type: Array as PropType<IEdgeNode[]>,
     required: true
+  },
+  /** 激活的节点 */
+  activeNode: {
+    type: Object as PropType<Ref<ITreeNode | undefined>>,
+    required: true
+  },
+  /** 节点点击 */
+  onNodeClick: {
+    type: Function as PropType<(ev: MouseEvent, node?: ITreeNode) => void>,
+    required: true
+  },
+  /** 选框器点位信息 */
+  points: {
+    type: String,
+    required: false
   }
 })
-
-/** 节点选择 */
-const selection = useSelection()
 
 function clipboard() {
   navigator.clipboard.read().then((res) => {
