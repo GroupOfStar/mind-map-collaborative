@@ -55,7 +55,6 @@ export class Theme<T extends Partial<INodeTheme>> implements ITheme<T> {
   public nodeUseLineStyle?: boolean
   public fontFamily?: string
   public selectedBorderWidth!: number
-  public selectedBorderColor!: string
   public selectedBorderPadding!: number
   public expandBorderWidth?: number
   public expandTBPadding?: number

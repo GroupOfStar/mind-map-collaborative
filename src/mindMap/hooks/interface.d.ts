@@ -1,4 +1,4 @@
-import type { ComputedRef } from 'vue'
+import type { Ref } from 'vue'
 
 /** 修改graph定位信息 */
 export type ISetGraphPosition = (position: Partial<Pick<IRect, 'x' | 'y'>>) => void
@@ -17,18 +17,12 @@ export interface IBarScrollOption {
   setGraphPosition: ISetGraphPosition
 }
 
-/**
- * 滚动条信息
- */
-export interface IScroll {
-  /** 偏移量 */
-  offset: ComputedRef<number>
-  /** 滚动条大小 */
-  size: ComputedRef<number>
-  /** 鼠标按下事件 */
-  onMousedown: (ev: MouseEvent) => void
-  /** 鼠标移动事件 */
-  onMousemove: (ev: MouseEvent) => void
-  /** 鼠标松开事件 */
-  onMouseup: (ev: MouseEvent) => void
+/** 节点选择 */
+export interface ISelection {
+  /** 激活的节点 */
+  activeNode: Ref<ITreeNode | undefined>
+  /** 节点点击事件 */
+  onClick: (ev: MouseEvent, node?: ITreeNode) => void
+  /** 取消节点激活 */
+  handleActiveCancel: (ev: MouseEvent) => void
 }

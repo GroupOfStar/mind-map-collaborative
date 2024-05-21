@@ -6,6 +6,7 @@
     :width="containerRect.width"
     :height="containerRect.height"
     style="display: block"
+    @click="selection.handleActiveCancel"
   >
     <g :transform="`rotate(0) translate(${graphRect.x}, ${graphRect.y}) scale(1)`">
       <g class="g-boundary"></g>
@@ -19,7 +20,12 @@
         />
       </g>
       <g class="g-nodes">
-        <NodeItem v-for="item in serverNodeList" :key="item.id" :node="item" />
+        <NodeItem
+          v-for="item in serverNodeList"
+          :key="item.id"
+          :node="item"
+          :selection="selection"
+        />
       </g>
       <g class="g-associative-temp"></g>
       <g class="g-associative-text"></g>
@@ -45,6 +51,7 @@ export default {
 import { onMounted, onUnmounted, type PropType } from 'vue'
 import NodeItem from './NodeItem.vue'
 import LineItem from './LineItem.vue'
+import { useSelection } from '../hooks'
 
 defineProps({
   /** container画布图形位置信息 */
@@ -73,6 +80,9 @@ defineProps({
     required: true
   }
 })
+
+/** 节点选择 */
+const selection = useSelection()
 
 function clipboard() {
   navigator.clipboard.read().then((res) => {

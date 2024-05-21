@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import type { ComputedRef } from 'vue'
-import type { IBarScrollOption, IScroll } from './interface'
+import type { IBarScrollOption } from './interface'
+import type { IScroll } from './../components/ScrollBar/interface.d'
 
 export function useBarScroll(option: ComputedRef<IBarScrollOption>): IScroll {
   const isMousedown = ref(false)

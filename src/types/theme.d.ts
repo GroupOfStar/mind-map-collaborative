@@ -95,8 +95,6 @@ interface IConfig {
   fontFamily?: string
   /** 选中节点后的边框宽度 */
   selectedBorderWidth: number
-  /** 选中节点后的边框颜色 */
-  selectedBorderColor: string
   /** 选中节点后的边框内边距 */
   selectedBorderPadding: number
   /** 展开图标的边框宽度 */

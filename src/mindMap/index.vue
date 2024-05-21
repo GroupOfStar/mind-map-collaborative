@@ -34,7 +34,7 @@ export default {
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import MindGraph from './graph/index.vue'
-import ScrollBar from '@/components/ScrollBar/index.vue'
+import ScrollBar from './components/ScrollBar/index.vue'
 import { iframe } from '@/iframe'
 import { collaborate } from '@/service'
 import type { ICollaborativeOpt } from '@/service'

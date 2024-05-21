@@ -30,7 +30,6 @@ export function useContainer(
     switch (ev.button) {
       case 0:
       case 1:
-        console.log('ev.button :>> ', ev.button)
         break
       case 2:
         ev.stopPropagation()

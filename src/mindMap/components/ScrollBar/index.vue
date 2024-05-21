@@ -13,8 +13,6 @@
       @mousedown="scrollY.onMousedown"
     ></div>
   </div>
-  <!-- {{ console.log('scrollX :>> ', scrollX) }}
-  {{ console.log('scrollY :>> ', scrollY) }} -->
 </template>
 
 <script lang="ts">
@@ -24,7 +22,7 @@ export default {
 </script>
 <script setup lang="ts">
 import type { PropType } from 'vue'
-import type { IScroll } from '@/mindMap/hooks'
+import type { IScroll } from './interface.d'
 
 defineProps({
   /** 滚动条轨道宽度 */

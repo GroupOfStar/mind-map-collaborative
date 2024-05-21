@@ -1,10 +1,12 @@
 <template>
   <g
     :id="node.id"
+    class="node-wrapper"
     :transform="`matrix(1,0,0,1,${nodeRect.x + theme.selectedBorderPadding + theme.selectedBorderWidth},${nodeRect.y + theme.selectedBorderPadding + theme.selectedBorderWidth})`"
+    @click="(ev) => selection.onClick(ev, node)"
   >
     <rect
-      class="node-border active"
+      :class="['node-border', { active: selection.activeNode.value?.id === node.id }]"
       :width="
         nodeRect.width +
         (nodeStyle.paddingX + theme.selectedBorderPadding + nodeStyle.borderWidth) * 2 +
@@ -21,7 +23,6 @@
       :ry="nodeStyle.borderRadius"
       fill-opacity="0"
       :stroke-width="theme.selectedBorderWidth"
-      :stroke="theme.selectedBorderColor"
     />
     <rect
       class="signal-node"
@@ -35,7 +36,6 @@
       :stroke-dasharray="nodeStyle.borderDasharray"
       :stroke-width="nodeStyle.borderWidth"
       :stroke="nodeStyle.borderColor"
-      cursor="pointer"
     />
     <!-- <rect
       class="drag-scale-left"
@@ -62,7 +62,6 @@
       :height="nodeRect.height"
       :x="nodeStyle.paddingX + nodeStyle.borderWidth"
       :y="nodeStyle.paddingY + nodeStyle.borderWidth"
-      cursor="pointer"
     >
       <div class="node-all-dom">
         <div class="text-img-dom">
@@ -102,11 +101,17 @@ import { ref, computed, watch, nextTick } from 'vue'
 import type { PropType } from 'vue'
 import { getSizeByElement } from './../utils/'
 import { useNodeRectStore } from '@/store'
+import type { ISelection } from '../hooks/interface'
 
 const props = defineProps({
   /** 节点 */
   node: {
     type: Object as PropType<ITreeNode>,
+    required: true
+  },
+  /** 节点选择 */
+  selection: {
+    type: Object as PropType<ISelection>,
     required: true
   }
 })
@@ -139,18 +144,30 @@ watch(
 </script>
 
 <style lang="less" scoped>
-.node-foreignObject {
-  display: block;
-  user-select: none;
-  .text-content-group {
-    .text-content-input {
-      box-sizing: border-box;
-      outline: none;
-      white-space: pre-wrap;
-      overflow-wrap: break-word;
-      word-break: break-all;
-      overflow: hidden;
-      text-decoration: none;
+.node-wrapper {
+  &:hover .node-border {
+    stroke: var(--selected-border-color-hover);
+  }
+  .node-border.selected {
+    stroke: var(--selected-border-color-select);
+  }
+  .node-border.active {
+    stroke: var(--selected-border-color-active);
+  }
+
+  .node-foreignObject {
+    display: block;
+    user-select: none;
+    .text-content-group {
+      .text-content-input {
+        box-sizing: border-box;
+        outline: none;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        word-break: break-all;
+        overflow: hidden;
+        text-decoration: none;
+      }
     }
   }
 }

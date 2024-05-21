@@ -1,6 +1,5 @@
 <template>
   <path
-    v-if="!!beginNode"
     :d="path"
     fill="none"
     stroke-width="2"

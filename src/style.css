@@ -3,3 +3,12 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+:root {
+  /** 选中节点后的边框颜色 */
+  --selected-border-color-active: #1476ff;
+  /** 被选择节点的边框颜色 */
+  --selected-border-color-select: #85b5f7;
+  /** 被hover节点的边框颜色 */
+  --selected-border-color-hover: #9dc6ff;
+}

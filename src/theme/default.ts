@@ -22,7 +22,6 @@ export const defaultTheme: ITheme = {
   nodeUseLineStyle: false,
   fontFamily: 'Harmony Medium',
   selectedBorderWidth: 2,
-  selectedBorderColor: '#7716d9',
   selectedBorderPadding: 2,
   expandBorderWidth: 2,
   expandTBPadding: 0,
