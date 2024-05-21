@@ -1,5 +1,4 @@
 <template>
-  <!-- d="M2135.5 685.5C2106.5 685.5 2106.5 764.25 2077.5 764.25 " -->
   <path
     v-if="!!beginNode"
     :d="path"
@@ -25,7 +24,7 @@ const props = defineProps({
   /** 开始节点 */
   beginNode: {
     type: Object as PropType<IClientNode>,
-    required: false
+    required: true
   },
   /** 结束节点 */
   endNode: {
@@ -37,7 +36,9 @@ const props = defineProps({
 const nodeRectStore = useNodeRectStore()
 
 const theme = computed(() => nodeRectStore.state.theme)
-const nodeStyle = computed(() => theme.value.getStyles(props.endNode))
+
+const beginNodeStyle = computed(() => theme.value.getStyles(props.beginNode))
+const endNodeStyle = computed(() => theme.value.getStyles(props.endNode))
 
 /**
  * 二次贝塞尔曲线
@@ -60,30 +61,32 @@ function quadraticCurvePath(edgePoint: {
 }
 
 const path = computed(() => {
-  const beginNode = props.beginNode || { x: 0, y: 0, width: 0, height: 0 }
-  const endNode = props.endNode
-  const beginX = beginNode.x + beginNode.width
-  const beginY = beginNode.y + beginNode.height / 2
-  const endX = endNode.x
-  const endY = endNode.y + endNode.height / 2
+  const { beginNode, endNode } = props
+  const { selectedBorderWidth, selectedBorderPadding } = theme.value
+  const beginX = beginNode.x + selectedBorderPadding + selectedBorderWidth
+  const beginY =
+    beginNode.y +
+    selectedBorderPadding +
+    selectedBorderWidth +
+    beginNodeStyle.value.borderWidth +
+    beginNodeStyle.value.paddingY +
+    beginNode.height / 2
+
+  const endX =
+    endNode.x +
+    selectedBorderPadding +
+    selectedBorderWidth +
+    endNode.width +
+    (endNodeStyle.value.paddingX + endNodeStyle.value.borderWidth) * 2
+  const endY =
+    endNode.y +
+    selectedBorderPadding +
+    selectedBorderWidth +
+    endNodeStyle.value.borderWidth +
+    endNodeStyle.value.paddingY +
+    endNode.height / 2
   return quadraticCurvePath({ beginX, beginY, endX, endY })
 })
 </script>
 
-<style lang="less" scoped>
-.node-foreignObject {
-  display: block;
-  user-select: none;
-  .text-content-group {
-    .text-content-input {
-      box-sizing: border-box;
-      outline: none;
-      white-space: pre-wrap;
-      overflow-wrap: break-word;
-      word-break: break-all;
-      overflow: hidden;
-      text-decoration: none;
-    }
-  }
-}
-</style>
+<style lang="less" scoped></style>

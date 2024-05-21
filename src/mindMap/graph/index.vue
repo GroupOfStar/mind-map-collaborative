@@ -10,9 +10,6 @@
     <g :transform="`rotate(0) translate(${graphRect.x}, ${graphRect.y}) scale(1)`">
       <g class="g-boundary"></g>
       <g class="g-associative-lines"></g>
-      <g class="g-nodes">
-        <NodeItem v-for="item in serverNodeList" :key="item.id" :node="item" />
-      </g>
       <g class="g-lines">
         <LineItem
           v-for="item in edgeNodeList"
@@ -20,6 +17,9 @@
           :beginNode="item.beginNode"
           :endNode="item.endNode"
         />
+      </g>
+      <g class="g-nodes">
+        <NodeItem v-for="item in serverNodeList" :key="item.id" :node="item" />
       </g>
       <g class="g-associative-temp"></g>
       <g class="g-associative-text"></g>
