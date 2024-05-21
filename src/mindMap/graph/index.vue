@@ -24,6 +24,7 @@
           :key="item.id"
           :node="item"
           :activeNode="activeNode"
+          :selectedNodeList="selectedNodeList"
           :onNodeClick="onNodeClick"
         />
       </g>
@@ -83,6 +84,11 @@ defineProps({
   /** 激活的节点 */
   activeNode: {
     type: Object as PropType<Ref<ITreeNode | undefined>>,
+    required: true
+  },
+  /** 选择的节点 */
+  selectedNodeList: {
+    type: Object as PropType<Ref<ITreeNode[]>>,
     required: true
   },
   /** 节点点击 */

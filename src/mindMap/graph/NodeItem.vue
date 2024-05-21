@@ -6,7 +6,7 @@
     @click="(ev) => onNodeClick(ev, node)"
   >
     <rect
-      :class="['node-border', { active: activeNode.value?.id === node.id }]"
+      :class="['node-border', { selected, active: activeNode.value?.id === node.id }]"
       :width="
         nodeRect.width +
         (nodeStyle.paddingX + theme.selectedBorderPadding + nodeStyle.borderWidth) * 2 +
@@ -114,6 +114,11 @@ const props = defineProps({
     type: Object as PropType<Ref<ITreeNode | undefined>>,
     required: true
   },
+  /** 选择的节点 */
+  selectedNodeList: {
+    type: Object as PropType<Ref<ITreeNode[]>>,
+    required: true
+  },
   /** 节点点击 */
   onNodeClick: {
     type: Function as PropType<(ev: MouseEvent, node?: ITreeNode) => void>,
@@ -129,6 +134,10 @@ const nodeRectStore = useNodeRectStore()
 const nodeRect = computed(() => nodeRectStore.getNodeClientRect(props.node.id))
 const theme = computed(() => nodeRectStore.state.theme)
 const nodeStyle = computed(() => theme.value.getStyles(props.node))
+
+const selected = computed(() =>
+  props.selectedNodeList.value.some((item) => item.id === props.node.id)
+)
 
 watch(
   [() => props.node, () => textInputRef.value, () => theme.value.textAutoWrapWidth],

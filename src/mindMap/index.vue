@@ -17,6 +17,7 @@
       :rectNodeList="rectNodeList"
       :edgeNodeList="edgeNodeList"
       :activeNode="selection.activeNode"
+      :selectedNodeList="selection.selectedNodeList"
       :onNodeClick="selection.onNodeClick"
       :points="selection.points.value"
     />
@@ -53,7 +54,7 @@ const mindMapStore = useMindMapStore()
 const { serverNodeList } = storeToRefs(mindMapStore)
 
 const nodeRectStore = useNodeRectStore()
-const { state, rectNodeList, graphSize, edgeNodeList } = storeToRefs(nodeRectStore)
+const { state, rectNodeTree, rectNodeList, graphSize, edgeNodeList } = storeToRefs(nodeRectStore)
 
 const { graphRect, setGraphPosition } = useGraphScroll(graphSize)
 const container = useContainer(containerRef, graphRect, setGraphPosition)
@@ -77,7 +78,7 @@ const scrollY = useBarScroll(
 )
 
 /** 节点选择 */
-const selection = useSelection()
+const selection = useSelection(rectNodeTree, graphRect)
 
 function collaborativeInit(sdkMsg: any) {
   const { docId, collaConfig, traceId, realName } = sdkMsg
@@ -114,11 +115,9 @@ function onContainerMousedown(ev: MouseEvent) {
 }
 function onContainerMousemove(ev: MouseEvent) {
   container.onMousemove(ev)
-  selection.onMousemove(ev)
 }
 function onContainerMouseup(ev: MouseEvent) {
   container.onMouseup(ev)
-  selection.onMouseup(ev)
 }
 
 function onWindowResize() {
@@ -131,11 +130,13 @@ function onDocumentMousedown(ev: MouseEvent) {}
 function onDocumentMousemove(ev: MouseEvent) {
   scrollX.onMousemove(ev)
   scrollY.onMousemove(ev)
+  selection.onMousemove(ev)
 }
 
 function onDocumentMouseup(ev: MouseEvent) {
   scrollX.onMouseup(ev)
   scrollY.onMouseup(ev)
+  selection.onMouseup(ev)
 }
 
 onMounted(() => {

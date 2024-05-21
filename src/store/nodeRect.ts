@@ -150,6 +150,7 @@ export const useNodeRectStore = defineStore('nodeRect', () => {
     state,
     mindMapLayout,
     graphSize,
+    rectNodeTree,
     edgeNodeList,
     rectNodeList,
     getNodeClientRect,
