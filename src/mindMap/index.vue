@@ -8,7 +8,7 @@
     @mouseup="onContainerMouseup"
     @contextmenu="container.onContextmenu"
     @wheel="container.onWheel"
-    @click="selection.handleActiveCancel"
+    @click="selection.onContainerClick"
   >
     <MindGraph
       :containerRect="container.containerRect"

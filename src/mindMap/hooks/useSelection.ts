@@ -11,15 +11,12 @@ export function useSelection(
   /** 激活的节点 */
   const activeNode = ref<ITreeNode>()
 
-  /** 鼠标按下的状态 */
-  const mousedownState = {
-    /** 是否左键按下 */
-    isLeftMousedown: false,
-    /** 左键按下时的起始x */
-    startX: 0,
-    /** 左键按下时的起始y */
-    startY: 0
-  }
+  /** 鼠标左键是否按下 */
+  let isLeftMousedown = false
+  /** 鼠标左键按下时的起始坐标 */
+  const startPosition = { x: 0, y: 0 }
+  /** 鼠标抬起时的结束坐标 */
+  const endPosition = { x: 0, y: 0 }
 
   /** 选框器点位信息 */
   const points = ref<string>()
@@ -27,11 +24,21 @@ export function useSelection(
   /** 选择的节点list */
   const selectedNodeList = ref<ITreeNode[]>([])
 
-  /** 取消节点激活 */
-  function handleActiveCancel(ev: MouseEvent) {
-    console.log('handleActiveCancel :', mousedownState.isLeftMousedown)
-    ev.stopPropagation()
-    activeNode.value = undefined
+  /**
+   * 画布点击事件
+   * 拖拽即 mousedown,mousemove,mouseup 后会触发 画布点击事件
+   * 所以需要通过判断位移来区别点击和拖拽逻辑
+   */
+  function onContainerClick(ev: MouseEvent) {
+    const { x: x1, y: y1 } = startPosition
+    const { x: x2, y: y2 } = endPosition
+    const d = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2))
+    // 点击逻辑
+    if (d <= 4) {
+      ev.stopPropagation()
+      activeNode.value = undefined
+      selectedNodeList.value = []
+    }
   }
 
   /** 节点点击事件 */
@@ -74,10 +81,10 @@ export function useSelection(
     // 0表示左键, 1表示中键, 2表示右键
     switch (ev.button) {
       case 0:
-        ev.preventDefault()
-        mousedownState.startX = ev.clientX
-        mousedownState.startY = ev.clientY
-        mousedownState.isLeftMousedown = true
+        ev.stopPropagation()
+        isLeftMousedown = true
+        startPosition.x = ev.clientX
+        startPosition.y = ev.clientY
         break
       case 1:
       case 2:
@@ -87,31 +94,32 @@ export function useSelection(
 
   /** 鼠标移动事件 */
   function onMousemove(ev: MouseEvent) {
-    if (mousedownState.isLeftMousedown) {
+    if (isLeftMousedown) {
       ev.stopPropagation()
       const { clientX, clientY } = ev
-      const { startX, startY } = mousedownState
+      const { x, y } = startPosition
       // 左上 右上 右下 左下
-      points.value = `${startX},${startY} ${clientX},${startY} ${clientX},${clientY} ${startX},${clientY}`
-
-      handleCollisionCheck(startX, startY, clientX, clientY)
+      points.value = `${x},${y} ${clientX},${y} ${clientX},${clientY} ${x},${clientY}`
+      handleCollisionCheck(x, y, clientX, clientY)
     }
   }
 
   // 鼠标松开事件, 清除状态
   function onMouseup(ev: MouseEvent) {
-    ev.stopPropagation()
-    points.value = undefined
-    mousedownState.isLeftMousedown = false
-    mousedownState.startX = 0
-    mousedownState.startY = 0
+    if (isLeftMousedown) {
+      ev.stopPropagation()
+      isLeftMousedown = false
+      endPosition.x = ev.clientX
+      endPosition.y = ev.clientY
+      points.value = undefined
+    }
   }
 
   return {
     activeNode,
     selectedNodeList,
     points,
-    handleActiveCancel,
+    onContainerClick,
     onNodeClick,
     onMousedown,
     onMousemove,

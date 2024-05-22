@@ -6,9 +6,9 @@
 
 :root {
   /** 选中节点后的边框颜色 */
-  --selected-border-color-active: #1476ff;
+  --selected-border-color-active: #0075FF;
   /** 被选择节点的边框颜色 */
-  --selected-border-color-select: #85b5f7;
+  --selected-border-color-select: #82B4FF;
   /** 被hover节点的边框颜色 */
-  --selected-border-color-hover: #9dc6ff;
+  --selected-border-color-hover: #D2E6FF;
 }
