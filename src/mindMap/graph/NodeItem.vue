@@ -121,7 +121,7 @@ const props = defineProps({
   },
   /** 节点点击 */
   onNodeClick: {
-    type: Function as PropType<(ev: MouseEvent, node?: ITreeNode) => void>,
+    type: Function as PropType<(ev: MouseEvent, node: ITreeNode) => void>,
     required: true
   }
 })

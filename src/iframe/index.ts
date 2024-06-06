@@ -21,11 +21,6 @@ export class IframeProvider {
   private options: IframeOptions
   private _provider?: FrameMessageHandler
   constructor(options: IframeOptions) {
-    console.log('IframeProvider constructor')
-    console.log(
-      '`${window.location.protocol}//${window.location.host}` :>> ',
-      `${window.location.protocol}//${window.location.host}`
-    )
     const from = new URLSearchParams(window.location.search).get('_iffrom') || ''
     console.log('decodeURI(from) :>> ', decodeURI(from))
     this.options = options

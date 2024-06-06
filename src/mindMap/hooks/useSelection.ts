@@ -42,10 +42,10 @@ export function useSelection(
   }
 
   /** 节点点击事件 */
-  function onNodeClick(ev: MouseEvent, node?: ITreeNode) {
+  function onNodeClick(ev: MouseEvent, node: ITreeNode) {
     ev.stopPropagation()
     activeNode.value = node
-    selectedNodeList.value = node ? [node] : []
+    selectedNodeList.value = [node]
   }
 
   /** 碰撞相交检测 */
@@ -60,6 +60,8 @@ export function useSelection(
     const maxX = Math.max(startX, endX)
     const maxY = Math.max(startY, endY)
 
+    let _selectedNodeList: IClientNode[] = []
+    let _activeNode: IClientNode | undefined = undefined
     forScopeEachTree((node) => {
       const min_x = node.x + graphRect.value.x
       const min_y = node.y + graphRect.value.y
@@ -68,12 +70,14 @@ export function useSelection(
 
       // 修改相交计算方法，接触到了就选中
       if (minX <= max_x && maxX >= min_x && minY <= max_y && maxY >= min_y) {
-        selectedNodeList.value = selectedNodeList.value.concat([node])
-        activeNode.value = node
+        _selectedNodeList.push(node)
+        _activeNode = node
       } else {
-        selectedNodeList.value = selectedNodeList.value.filter((item) => item.id !== node.id)
+        _selectedNodeList = _selectedNodeList.filter((item) => item.id !== node.id)
       }
     }, rectNodeTree.value)
+    selectedNodeList.value = _selectedNodeList
+    activeNode.value = _activeNode
   }, 100)
 
   /** 鼠标按下事件 */

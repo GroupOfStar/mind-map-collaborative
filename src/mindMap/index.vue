@@ -45,7 +45,6 @@ import { collaborate } from '@/service'
 import type { ICollaborativeOpt } from '@/service'
 import { useMindMapStore, useNodeRectStore } from '@/store'
 import { useGraphScroll, useBarScroll, useContainer, useSelection } from './hooks'
-import { parseStringify } from '@/utils'
 
 /** 容器ref */
 const containerRef = ref<HTMLDivElement>()
@@ -80,8 +79,8 @@ const scrollY = useBarScroll(
 /** 节点选择 */
 const selection = useSelection(rectNodeTree, graphRect)
 
-function collaborativeInit(sdkMsg: any) {
-  const { docId, collaConfig, traceId, realName } = sdkMsg
+iframe.init().then((res) => {
+  const { docId, collaConfig, traceId, realName } = res.initialize
   const option: ICollaborativeOpt = {
     docId,
     scene: collaConfig?.scene,
@@ -98,15 +97,14 @@ function collaborativeInit(sdkMsg: any) {
   collaborate.init(option)
   collaborate.registryAwareNess()
   collaborate.factoryAddListener(function (nodes, config) {
-    console.log('serviceNodes :>> ', nodes, 'serviceConfig :>>', config)
     mindMapStore.setupData(nodes, config)
-  })
-}
 
-iframe.init().then((res) => {
-  const { data, ...sdkMsg } = res.initialize
-  console.log('iframe nodeTree :>> ', parseStringify(data, 'parse'))
-  collaborativeInit(sdkMsg)
+    // 显示iframe的导航栏
+    iframe.provider.request('onEditorDataChange', {
+      data: [...nodes, config],
+      fileId: config.id.split('#')[1]
+    })
+  })
 })
 
 function onContainerMousedown(ev: MouseEvent) {

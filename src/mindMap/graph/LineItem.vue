@@ -47,16 +47,26 @@ const endNodeStyle = computed(() => theme.value.getStyles(props.endNode))
  * @param y2 结束位置的y轴
  * @returns path路径
  */
-function quadraticCurvePath(edgePoint: {
-  beginX: number
-  beginY: number
-  endX: number
-  endY: number
-}) {
-  const { beginX, beginY, endX, endY } = edgePoint
+function quadraticCurvePath(beginX: number, beginY: number, endX: number, endY: number) {
   const cx = beginX + (endX - beginX) * 0.2
   const cy = beginY + (endY - beginY) * 0.8
   return `M ${beginX},${beginY} Q ${cx},${cy} ${endX},${endY}`
+}
+
+/**
+ * 三次贝塞尔曲线
+ * @param x1 开始位置的x轴
+ * @param y1 开始位置的y轴
+ * @param x2 结束位置的x轴
+ * @param y2 结束位置的y轴
+ * @returns path路径
+ */
+function cubicBezierPath(beginX: number, beginY: number, endX: number, endY: number) {
+  const cx1 = beginX + (endX - beginX) / 2
+  const cy1 = beginY
+  const cx2 = cx1
+  const cy2 = endY
+  return `M ${beginX},${beginY} C ${cx1},${cy1} ${cx2},${cy2} ${endX},${endY}`
 }
 
 const path = computed(() => {
@@ -84,7 +94,7 @@ const path = computed(() => {
     endNodeStyle.value.borderWidth +
     endNodeStyle.value.paddingY +
     endNode.height / 2
-  return quadraticCurvePath({ beginX, beginY, endX, endY })
+  return cubicBezierPath(beginX, beginY, endX, endY)
 })
 </script>
 
