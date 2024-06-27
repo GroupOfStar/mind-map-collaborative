@@ -1,6 +1,6 @@
 <template>
   <div
-    class="container"
+    class="mind-map-container"
     ref="containerRef"
     :style="{ backgroundColor: state.theme.backgroundColor }"
     @mousedown="onContainerMousedown"
@@ -152,10 +152,9 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="less" scoped>
-.container {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
+<style scoped lang="scss">
+.mind-map-container {
+  width: 100%;
+  height: 100%;
 }
 </style>

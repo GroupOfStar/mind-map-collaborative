@@ -73,10 +73,6 @@ export class Theme<T extends Partial<INodeTheme>> implements ITheme<T> {
     const newTheme = mergeTheme(config, ThemeConfigs[type])
     Object.assign(this, newTheme)
   }
-  // /** 是否为水平布局 */
-  // public get isHorizontal() {
-  //   return ['LeftLogical', 'RightLogical', 'Standard'].indexOf(this.layout) > -1
-  // }
   /** 获取服务端节点样式，如果没有，返回当前主题的默认样式 */
   public getStyles<K extends ITreeNode>(node: K): Required<T> {
     switch (node.depth) {

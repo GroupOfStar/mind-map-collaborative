@@ -157,16 +157,16 @@ watch(
 )
 </script>
 
-<style lang="less" scoped>
+<style scoped lang="scss">
 .node-wrapper {
   &:hover .node-border {
-    stroke: var(--selected-border-color-hover);
+    stroke: var(--el-color-primary-light-5);
   }
   .node-border.selected {
-    stroke: var(--selected-border-color-select);
+    stroke: var(--el-color-primary-light-3);
   }
   .node-border.active {
-    stroke: var(--selected-border-color-active);
+    stroke: var(--el-color-primary);
   }
 
   .node-foreignObject {

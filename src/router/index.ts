@@ -5,7 +5,11 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     { path: '/', redirect: '/mindeditor' },
-    { path: '/mindeditor', name: 'MindEditor', component: () => import('@/mindMap/index.vue') },
+    {
+      path: '/mindeditor',
+      name: 'MindEditor',
+      component: () => import('../views/MindEditor/index.vue')
+    },
     {
       path: '/home',
       name: 'Home',

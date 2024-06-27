@@ -1,0 +1,29 @@
+@import 'element-plus/theme-chalk/src/mixins/_var.scss';
+
+@import './iconFont/iconFont.css';
+
+@font-face {
+  font-family: 'HarmonyHeiTi Medium';
+  src: url('./hmFont/HarmonyHeiTi Medium.woff2');
+}
+@font-face {
+  font-family: 'HarmonyHeiTi';
+  src: url('./hmFont/HmFont/HarmonyHeiTi.woff2');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: getCssVar('font-family');
+  font-size: getCssVar('font-size', 'base');
+}
+
+:root {
+  @include set-css-var-value(('font-family', 'medium'), 'HarmonyHeiTi Medium');
+}
+
+#app {
+  position: absolute;
+  inset: 0;
+}

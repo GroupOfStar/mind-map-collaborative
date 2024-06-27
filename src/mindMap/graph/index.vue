@@ -129,4 +129,4 @@ onUnmounted(() => {
 })
 </script>
 
-<style lang="less" scoped></style>
+<style scoped lang="scss"></style>

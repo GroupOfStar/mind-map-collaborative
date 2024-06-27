@@ -48,7 +48,7 @@ defineProps({
 })
 </script>
 
-<style lang="less" scoped>
+<style scoped lang="scss">
 .scrollbar-track {
   position: absolute;
   .scrollbar-thumb {

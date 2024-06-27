@@ -2,12 +2,22 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import { kebabCase } from 'lodash-es'
 import fs from 'node:fs'
 import path from 'node:path'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@use "./src/assets/styles/variables.scss" as *;'
+      }
+    }
+  },
   plugins: [
     vue({
       template: {
@@ -16,6 +26,12 @@ export default defineConfig({
           isCustomElement: (tag) => kebabCase(tag).startsWith('svg-')
         }
       }
+    }),
+    AutoImport({
+      resolvers: [ElementPlusResolver({ importStyle: 'sass' })]
+    }),
+    Components({
+      resolvers: [ElementPlusResolver({ importStyle: 'sass' })]
     }),
     vueJsx()
   ],
