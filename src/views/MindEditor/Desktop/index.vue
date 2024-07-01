@@ -3,30 +3,39 @@
     <template #default>
       <TabPane
         paneKey="outline"
-        labelText="大纲"
+        :labelText="t('outline.title')"
         labelIcon="icon-taigang"
         labelPosition="left"
-        contentTitle="大纲"
+        :contentTitle="t('outline.title')"
         contentPosition="left"
       >
-        大纲浮窗
+        {{ t('outline.title') }}
+        <el-table mb-1 :data="[]" />
+        <el-pagination :total="10" />
       </TabPane>
-      <!-- 撤销 -->
-      <TabPane paneKey="revoke" labelIcon="icon-chexiao" labelTipContent="撤销" contentTitle="撤销">
-        撤销浮窗
+      <TabPane
+        paneKey="revoke"
+        labelIcon="icon-chexiao"
+        :labelTipContent="t('shortcutKeys.revoke')"
+        contentTitle="撤销"
+      >
+        {{ t('shortcutKeys.revoke') }}
       </TabPane>
-      <!-- 重做 -->
-      <TabPane paneKey="redo" labelIcon="icon-huifu" labelTipContent="重做" contentTitle="重做">
-        重做浮窗
+      <TabPane
+        paneKey="redo"
+        labelIcon="icon-huifu"
+        :labelTipContent="t('shortcutKeys.redo')"
+        :contentTitle="t('shortcutKeys.redo')"
+      >
+        {{ t('shortcutKeys.redo') }}
       </TabPane>
-      <!-- 回到中心 -->
       <TabPane
         paneKey="toCenter"
         labelIcon="icon-dingwei"
-        labelTipContent="回到中心"
-        contentTitle="回到中心"
+        :labelTipContent="t('shortcutKeys.backCenter')"
+        :contentTitle="t('shortcutKeys.backCenter')"
       >
-        回到中心
+        {{ t('shortcutKeys.backCenter') }}
       </TabPane>
       <TabPaneLine />
     </template>
@@ -41,11 +50,13 @@ export default {
 </script>
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
+import { useLocale } from 'element-plus'
 import { Tabs, TabPane, TabPaneLine } from './components/Tabs'
 import MindMap from '@/mindMap/index.vue'
 
 const currentTab = ref<string | undefined>('outline')
 const disabledList = reactive<string[]>(['revoke', 'redo'])
+const { t } = useLocale()
 
 function onTabsChange(tab: string | undefined) {
   console.log('tab :>> ', tab)

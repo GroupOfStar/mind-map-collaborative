@@ -52,8 +52,10 @@ export default {
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
 import type { Ref, PropType } from 'vue'
+import { storeToRefs } from 'pinia'
 import NodeItem from './NodeItem.vue'
 import LineItem from './LineItem.vue'
+import { useMindMapStore } from '@/store'
 
 defineProps({
   /** container画布图形位置信息 */
@@ -64,11 +66,6 @@ defineProps({
   /** graph图形位置信息 */
   graphRect: {
     type: Object as PropType<IRect>,
-    required: true
-  },
-  /** 服务数据NodeList */
-  serverNodeList: {
-    type: Array as PropType<ITreeNode[]>,
     required: true
   },
   /** 视图数据NodeList */
@@ -102,6 +99,9 @@ defineProps({
     required: false
   }
 })
+
+const mindMapStore = useMindMapStore()
+const { serverNodeList } = storeToRefs(mindMapStore)
 
 function clipboard() {
   navigator.clipboard.read().then((res) => {

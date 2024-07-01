@@ -25,22 +25,29 @@ export class IframeProvider {
     console.log('decodeURI(from) :>> ', decodeURI(from))
     this.options = options
   }
-  get provider() {
+  public get provider() {
     if (this._provider) {
       return this._provider
     }
     throw new Error('请先执行 init 方法')
   }
-  set provider(val: FrameMessageHandler) {
+  private set provider(val: FrameMessageHandler) {
     this._provider = val
   }
-  init() {
+  public init() {
     return new Promise<FrameMessageHandler>((resolve, reject) => {
       iframeProvider(this.model, this.options)
         .then((provider) => {
           if (provider) {
             this.provider = provider
             provider.respondReady()
+            // window.dispatchEvent(
+            //   new CustomEvent(IFRAME_MESSAGE_NAME, {
+            //     bubbles: true,
+            //     cancelable: false,
+            //     detail: provider.initialize
+            //   })
+            // )
             resolve(provider)
           } else {
             parent.postMessage({ action: 'getInit' }, getTargetOrigin())
@@ -48,6 +55,9 @@ export class IframeProvider {
         })
         .catch(reject)
     })
+  }
+  public registryAction(action: string, func: Function) {
+    this.model[action] = func
   }
 }
 

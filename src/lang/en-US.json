@@ -1,0 +1,11 @@
+{
+  "outline": {
+    "title": "outline"
+  },
+  "shortcutKeys.revoke": "Cancel",
+  "shortcutKeys.redo": "Redo",
+  "shortcutKeys.backCenter": "back to center",
+  "styles": {
+    "width": "width"
+  }
+}

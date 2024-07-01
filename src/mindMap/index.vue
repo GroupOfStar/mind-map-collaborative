@@ -13,7 +13,6 @@
     <MindGraph
       :containerRect="container.containerRect"
       :graphRect="graphRect"
-      :serverNodeList="serverNodeList"
       :rectNodeList="rectNodeList"
       :edgeNodeList="edgeNodeList"
       :activeNode="selection.activeNode"
@@ -40,17 +39,11 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import MindGraph from './graph/index.vue'
 import ScrollBar from './components/ScrollBar/index.vue'
-import { iframe } from '@/iframe'
-import { collaborate } from '@/service'
-import type { ICollaborativeOpt } from '@/service'
-import { useMindMapStore, useNodeRectStore } from '@/store'
+import { useNodeRectStore } from '@/store'
 import { useGraphScroll, useBarScroll, useContainer, useSelection } from './hooks'
 
 /** 容器ref */
 const containerRef = ref<HTMLDivElement>()
-
-const mindMapStore = useMindMapStore()
-const { serverNodeList } = storeToRefs(mindMapStore)
 
 const nodeRectStore = useNodeRectStore()
 const { state, rectNodeTree, rectNodeList, graphSize, edgeNodeList } = storeToRefs(nodeRectStore)
@@ -78,34 +71,6 @@ const scrollY = useBarScroll(
 
 /** 节点选择 */
 const selection = useSelection(rectNodeTree, graphRect)
-
-iframe.init().then((res) => {
-  const { docId, collaConfig, traceId, realName } = res.initialize
-  const option: ICollaborativeOpt = {
-    docId,
-    scene: collaConfig?.scene,
-    authenticate: {
-      traceId,
-      realName,
-      ...collaConfig?.authentication
-    },
-    WSDocumentPlugin: {
-      ...collaConfig?.collabOptions,
-      awarenessDebounceMs: 100 //awareness防抖间隔默认为100
-    }
-  }
-  collaborate.init(option)
-  collaborate.registryAwareNess()
-  collaborate.factoryAddListener(function (nodes, config) {
-    mindMapStore.setupData(nodes, config)
-
-    // 显示iframe的导航栏
-    iframe.provider.request('onEditorDataChange', {
-      data: [...nodes, config],
-      fileId: config.id.split('#')[1]
-    })
-  })
-})
 
 function onContainerMousedown(ev: MouseEvent) {
   container.onMousedown(ev)
