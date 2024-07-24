@@ -98,22 +98,28 @@ export function useContainer(
     ev.stopPropagation()
   }
 
-  /** 浏览器窗口改变事件 */
-  const onResize = debounce(() => {
-    if (containerRef.value) {
-      const { width, height } = containerRef.value.getBoundingClientRect()
-      containerRect.width = width
-      containerRect.height = height
-    }
-  }, 300)
+  /** 创建一个 ResizeObserver 实例，监听容器窗口改变事件 */
+  const onGraphObserver = new ResizeObserver(
+    debounce<ResizeObserverCallback>((entries) => {
+      entries.forEach((entry) => {
+        const { target, contentRect } = entry
+        if (target === containerRef.value) {
+          containerRect.width = contentRect.width
+          containerRect.height = contentRect.height
+        }
+      })
+    }, 300)
+  )
 
   /** graph居中 */
-  const onGraphCenter = debounce(() => {
-    setGraphPosition({
-      x: (containerRect.width - graphRect.value.width) / 2,
-      y: (containerRect.height - graphRect.value.height) / 2
-    })
-  }, 300)
+  const onGraphCenter = () => {
+    setTimeout(() => {
+      setGraphPosition({
+        x: (containerRect.width - graphRect.value.width) / 2,
+        y: (containerRect.height - graphRect.value.height) / 2
+      })
+    }, 350)
+  }
 
   return {
     containerRect,
@@ -122,7 +128,7 @@ export function useContainer(
     onMouseup,
     onWheel,
     onContextmenu,
-    onResize,
-    onGraphCenter
+    onGraphCenter,
+    onGraphObserver
   }
 }

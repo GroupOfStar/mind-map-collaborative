@@ -5,7 +5,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink"
     :width="containerRect.width"
     :height="containerRect.height"
-    style="display: block"
+    style="position: absolute; display: block"
   >
     <g :transform="`rotate(0) translate(${graphRect.x}, ${graphRect.y}) scale(1)`">
       <g class="g-boundary"></g>

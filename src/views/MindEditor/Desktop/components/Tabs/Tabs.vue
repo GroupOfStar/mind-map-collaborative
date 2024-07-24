@@ -87,6 +87,7 @@ provide<ComputedRef<ITabsInjection<T>>>(TAB_PROVIDE, tabInjection)
   .tabs-content {
     flex: 1;
     display: flex;
+    overflow: hidden;
 
     .tabs-aside-left,
     .tabs-aside-right {

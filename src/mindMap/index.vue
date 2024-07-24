@@ -83,11 +83,6 @@ function onContainerMouseup(ev: MouseEvent) {
   container.onMouseup(ev)
 }
 
-function onWindowResize() {
-  container.onResize()
-  container.onGraphCenter()
-}
-
 function onDocumentMousedown(ev: MouseEvent) {}
 
 function onDocumentMousemove(ev: MouseEvent) {
@@ -103,14 +98,18 @@ function onDocumentMouseup(ev: MouseEvent) {
 }
 
 onMounted(() => {
-  onWindowResize()
-  window.addEventListener('resize', onWindowResize)
+  // 开始观察某个元素
+  container.onGraphObserver.observe(containerRef.value!)
   document.addEventListener('mousedown', onDocumentMousedown)
   document.addEventListener('mousemove', onDocumentMousemove)
   document.addEventListener('mouseup', onDocumentMouseup)
+  container.onGraphCenter()
 })
+
 onUnmounted(() => {
-  window.removeEventListener('resize', onWindowResize)
+  if (containerRef.value) {
+    container.onGraphObserver.unobserve(containerRef.value)
+  }
   document.removeEventListener('mousedown', onDocumentMousedown)
   document.removeEventListener('mousemove', onDocumentMousemove)
   document.removeEventListener('mouseup', onDocumentMouseup)
@@ -119,7 +118,7 @@ onUnmounted(() => {
 
 <style scoped lang="scss">
 .mind-map-container {
-  width: 100%;
   height: 100%;
+  position: relative;
 }
 </style>
