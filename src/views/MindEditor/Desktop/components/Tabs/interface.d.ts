@@ -3,6 +3,7 @@ export interface ITabsInjection<T extends string | undefined> {
   modelValue: T
   disabledList: Omit<T, undefined>[]
   onTabChange: (paneKey: T, contentPosition: ITabPaneProps['contentPosition']) => void
+  onTabsClick: (paneKey: T, contentPosition: ITabPaneProps['contentPosition']) => void
   tabsWrapperRef?: HTMLDivElement
 }
 
@@ -12,6 +13,7 @@ export interface ITabsProps<T extends string | undefined> {
 }
 export interface ITabsEmits<T extends string | undefined> {
   (e: 'update:modelValue', val?: T): void
+  (e: 'tabsClick', val?: T): void
 }
 
 export type Position = 'left' | 'center' | 'right'
@@ -22,7 +24,7 @@ export interface ITabPaneProps<T extends string> {
   labelText?: string
   labelPosition?: Position
   labelTipContent?: string
-  contentTitle: string
+  contentTitle?: string
   contentPosition?: 'left' | 'right'
 }
 

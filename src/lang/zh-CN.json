@@ -2,9 +2,11 @@
   "outline": {
     "title": "大纲"
   },
-  "shortcutKeys.revoke": "撤销",
-  "shortcutKeys.redo": "重做",
-  "shortcutKeys.backCenter": "回到中心",
+  "shortcutKeys": {
+    "revoke": "撤销",
+    "recovery": "恢复",
+    "backCenter": "回到中心"
+  },
   "styles": {
     "width": "宽度"
   }

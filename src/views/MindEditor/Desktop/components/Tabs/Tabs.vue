@@ -50,10 +50,15 @@ function onTabChange(paneKey: T, position: ITabPaneProps<string>['contentPositio
   contentPosition.value = position
 }
 
+function onTabsClick(paneKey: T, position: ITabPaneProps<string>['contentPosition']) {
+  emits('tabsClick', paneKey)
+}
+
 const tabInjection = computed<ITabsInjection<T>>(() => ({
   modelValue: props.modelValue,
   disabledList: props.disabled || [],
   onTabChange,
+  onTabsClick,
   tabsWrapperRef: tabsWrapperRef.value
 }))
 

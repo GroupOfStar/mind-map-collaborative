@@ -12,6 +12,7 @@ export function useInjection(sectionPosition: ComputedRef<Position>) {
       modelValue: undefined,
       disabledList: [],
       onTabChange: () => {},
+      onTabsClick: () => {},
       tabsWrapperRef: undefined
     }))
   )

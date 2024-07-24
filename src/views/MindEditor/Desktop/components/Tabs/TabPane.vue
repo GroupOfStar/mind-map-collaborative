@@ -10,7 +10,7 @@
       <div
         class="tab-icon-wrapper"
         :class="{ active: injection.modelValue === paneKey, disabled }"
-        @click="onTabPaneShow"
+        @click="onTabPaneClick"
       >
         <i :class="['icon-mind', labelIcon]"></i>
         <span v-if="labelText">{{ labelText }}</span>
@@ -18,7 +18,7 @@
     </el-tooltip>
   </Teleport>
 
-  <Teleport v-if="!disabled" :to="contentTeleportEl">
+  <Teleport v-if="!disabled && hasContent" :to="contentTeleportEl">
     <div class="tab-pane" v-show="injection.modelValue === paneKey">
       <div class="pane-header">
         <div class="header-title">{{ contentTitle }}</div>
@@ -39,7 +39,7 @@ export default {
 }
 </script>
 <script setup lang="ts" generic="T extends string">
-import { computed, watch } from 'vue'
+import { computed, watch, useSlots } from 'vue'
 import type { ITabPaneProps } from './interface.d'
 import { useInjection } from './useInjection'
 
@@ -49,7 +49,12 @@ const props = withDefaults(defineProps<ITabPaneProps<T>>(), {
 })
 const { injection, sectionTeleportEl } = useInjection(computed(() => props.labelPosition))
 
+const slots = useSlots()
+
 const disabled = computed(() => injection.value.disabledList.includes(props.paneKey))
+
+/** 是否有内容 */
+const hasContent = computed(() => !!slots.default && !!props.contentTitle)
 
 const contentTeleportEl = computed(() => {
   const tabsWrapperRef = injection.value.tabsWrapperRef
@@ -77,15 +82,17 @@ watch(
   }
 )
 
-// 显示Pane
-const onTabPaneShow = (_event: MouseEvent) => {
-  // 禁用列表里的图标不执行
-  if (!disabled.value) {
+/** TabPane点击 */
+const onTabPaneClick = (ev: MouseEvent) => {
+  ev.stopPropagation()
+  injection.value.onTabsClick(props.paneKey, props.contentPosition)
+  // 禁用列表里的图标 和 无内容的 tabPane不执行
+  if (!disabled.value && hasContent.value) {
     injection.value.onTabChange(props.paneKey, props.contentPosition)
   }
 }
 
-// 隐藏Pane
+/** 隐藏Pane */
 const onTabPaneClose = (event: MouseEvent) => {
   event.stopPropagation()
   injection.value.onTabChange(undefined, undefined)

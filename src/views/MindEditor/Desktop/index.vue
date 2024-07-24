@@ -1,5 +1,5 @@
 <template>
-  <Tabs v-model="currentTab" @update:value="onTabsChange" :disabled="disabledList">
+  <Tabs v-model="currentTab" @tabsClick="onTabsClick" :disabled="disabledList">
     <template #default>
       <TabPane
         paneKey="outline"
@@ -17,25 +17,19 @@
         paneKey="revoke"
         labelIcon="icon-chexiao"
         :labelTipContent="t('shortcutKeys.revoke')"
-        contentTitle="撤销"
       >
-        {{ t('shortcutKeys.revoke') }}
       </TabPane>
       <TabPane
-        paneKey="redo"
+        paneKey="recovery"
         labelIcon="icon-huifu"
-        :labelTipContent="t('shortcutKeys.redo')"
-        :contentTitle="t('shortcutKeys.redo')"
+        :labelTipContent="t('shortcutKeys.recovery')"
       >
-        {{ t('shortcutKeys.redo') }}
       </TabPane>
       <TabPane
         paneKey="toCenter"
         labelIcon="icon-dingwei"
         :labelTipContent="t('shortcutKeys.backCenter')"
-        :contentTitle="t('shortcutKeys.backCenter')"
       >
-        {{ t('shortcutKeys.backCenter') }}
       </TabPane>
       <TabPaneLine />
     </template>
@@ -47,6 +41,7 @@
 export default {
   name: 'DesktopEditor'
 }
+type TTabPaneType = 'outline' | 'revoke' | 'recovery' | 'toCenter'
 </script>
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
@@ -54,12 +49,24 @@ import { useLocale } from 'element-plus'
 import { Tabs, TabPane, TabPaneLine } from './components/Tabs'
 import MindMap from '@/mindMap/index.vue'
 
-const currentTab = ref<string | undefined>('outline')
-const disabledList = reactive<string[]>(['revoke', 'redo'])
+const currentTab = ref<TTabPaneType | undefined>('outline')
+const disabledList = reactive<TTabPaneType[]>(['revoke', 'recovery'])
 const { t } = useLocale()
 
-function onTabsChange(tab: string | undefined) {
-  console.log('tab :>> ', tab)
+function onTabsClick(tab?: TTabPaneType) {
+  switch (tab) {
+    case 'outline':
+      break
+    case 'revoke':
+      break
+    case 'recovery':
+      break
+    case 'toCenter':
+      console.log('toCenter')
+      break
+    default:
+      break
+  }
 }
 </script>
 
