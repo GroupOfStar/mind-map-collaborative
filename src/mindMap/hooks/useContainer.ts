@@ -108,7 +108,7 @@ export function useContainer(
           containerRect.height = contentRect.height
         }
       })
-    }, 300)
+    }, 10)
   )
 
   /** graph居中 */
@@ -118,7 +118,7 @@ export function useContainer(
         x: (containerRect.width - graphRect.value.width) / 2,
         y: (containerRect.height - graphRect.value.height) / 2
       })
-    }, 350)
+    }, 400)
   }
 
   return {

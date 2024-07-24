@@ -98,21 +98,23 @@ function onDocumentMouseup(ev: MouseEvent) {
 }
 
 onMounted(() => {
-  // 开始观察某个元素
-  container.onGraphObserver.observe(containerRef.value!)
-  document.addEventListener('mousedown', onDocumentMousedown)
-  document.addEventListener('mousemove', onDocumentMousemove)
-  document.addEventListener('mouseup', onDocumentMouseup)
-  container.onGraphCenter()
+  if (containerRef.value) {
+    // 开始观察某个元素
+    container.onGraphObserver.observe(containerRef.value)
+    containerRef.value.addEventListener('mousedown', onDocumentMousedown)
+    containerRef.value.addEventListener('mousemove', onDocumentMousemove)
+    containerRef.value.addEventListener('mouseup', onDocumentMouseup)
+    container.onGraphCenter()
+  }
 })
 
 onUnmounted(() => {
   if (containerRef.value) {
     container.onGraphObserver.unobserve(containerRef.value)
+    containerRef.value.removeEventListener('mousedown', onDocumentMousedown)
+    containerRef.value.removeEventListener('mousemove', onDocumentMousemove)
+    containerRef.value.removeEventListener('mouseup', onDocumentMouseup)
   }
-  document.removeEventListener('mousedown', onDocumentMousedown)
-  document.removeEventListener('mousemove', onDocumentMousemove)
-  document.removeEventListener('mouseup', onDocumentMouseup)
 })
 </script>
 

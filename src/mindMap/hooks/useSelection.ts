@@ -87,8 +87,8 @@ export function useSelection(
       case 0:
         ev.stopPropagation()
         isLeftMousedown = true
-        startPosition.x = ev.clientX
-        startPosition.y = ev.clientY
+        startPosition.x = ev.offsetX
+        startPosition.y = ev.offsetY
         break
       case 1:
       case 2:
@@ -100,11 +100,11 @@ export function useSelection(
   function onMousemove(ev: MouseEvent) {
     if (isLeftMousedown) {
       ev.stopPropagation()
-      const { clientX, clientY } = ev
+      const { offsetX, offsetY } = ev
       const { x, y } = startPosition
       // 左上 右上 右下 左下
-      points.value = `${x},${y} ${clientX},${y} ${clientX},${clientY} ${x},${clientY}`
-      handleCollisionCheck(x, y, clientX, clientY)
+      points.value = `${x},${y} ${offsetX},${y} ${offsetX},${offsetY} ${x},${offsetY}`
+      handleCollisionCheck(x, y, offsetX, offsetY)
     }
   }
 
@@ -113,8 +113,8 @@ export function useSelection(
     if (isLeftMousedown) {
       ev.stopPropagation()
       isLeftMousedown = false
-      endPosition.x = ev.clientX
-      endPosition.y = ev.clientY
+      endPosition.x = ev.offsetX
+      endPosition.y = ev.offsetY
       points.value = undefined
     }
   }

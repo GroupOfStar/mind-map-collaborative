@@ -172,6 +172,7 @@ watch(
   .node-foreignObject {
     display: block;
     user-select: none;
+    pointer-events: none;
     .text-content-group {
       .text-content-input {
         box-sizing: border-box;
