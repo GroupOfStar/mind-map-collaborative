@@ -113,12 +113,10 @@ export function useContainer(
 
   /** graph居中 */
   const onGraphCenter = () => {
-    setTimeout(() => {
-      setGraphPosition({
-        x: (containerRect.width - graphRect.value.width) / 2,
-        y: (containerRect.height - graphRect.value.height) / 2
-      })
-    }, 400)
+    setGraphPosition({
+      x: (containerRect.width - graphRect.value.width) / 2,
+      y: (containerRect.height - graphRect.value.height) / 2
+    })
   }
 
   return {

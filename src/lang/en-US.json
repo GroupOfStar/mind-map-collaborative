@@ -1,13 +1,7 @@
 {
-  "outline": {
-    "title": "outline"
-  },
   "shortcutKeys": {
     "revoke": "Cancel",
     "recovery": "recovery",
-    "backCenter": "back to center"
-  },
-  "styles": {
-    "width": "width"
+    "backCenter": "Locate to the central theme"
   }
 }

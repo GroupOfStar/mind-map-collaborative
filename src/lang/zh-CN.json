@@ -1,13 +1,25 @@
 {
-  "outline": {
-    "title": "大纲"
-  },
   "shortcutKeys": {
     "revoke": "撤销",
     "recovery": "恢复",
-    "backCenter": "回到中心"
+    "backCenter": "定位到中心主题",
+    "insertNode": "插入同级节点",
+    "insertChildNode": "插入子级节点",
+    "generalization": "概要",
+    "associativeLine": "关联线",
+    "nodeIcon": "图标",
+    "nodeImage": "图片",
+    "nodeTag": "标签",
+    "miniMap": "小地图"
   },
-  "styles": {
+  "mindOutline": {
+    "title": "大纲"
+  },
+  "mindStyle": {
+    "title": "样式",
     "width": "宽度"
+  },
+  "mindTheme": {
+    "title": "结构风格"
   }
 }

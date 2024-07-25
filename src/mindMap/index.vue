@@ -104,7 +104,9 @@ onMounted(() => {
     containerRef.value.addEventListener('mousedown', onDocumentMousedown)
     containerRef.value.addEventListener('mousemove', onDocumentMousemove)
     containerRef.value.addEventListener('mouseup', onDocumentMouseup)
-    container.onGraphCenter()
+    setTimeout(() => {
+      container.onGraphCenter()
+    }, 500)
   }
 })
 
@@ -116,6 +118,8 @@ onUnmounted(() => {
     containerRef.value.removeEventListener('mouseup', onDocumentMouseup)
   }
 })
+
+defineExpose({ onGraphCenter: container.onGraphCenter })
 </script>
 
 <style scoped lang="scss">

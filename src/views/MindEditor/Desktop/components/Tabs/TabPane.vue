@@ -8,6 +8,7 @@
       :hide-after="0"
     >
       <div
+        v-if="!slots.customTab"
         class="tab-icon-wrapper"
         :class="{ active: injection.modelValue === paneKey, disabled }"
         @click="onTabPaneClick"
@@ -15,19 +16,23 @@
         <i :class="['icon-mind', labelIcon]"></i>
         <span v-if="labelText">{{ labelText }}</span>
       </div>
+      <slot v-else name="customTab"></slot>
     </el-tooltip>
   </Teleport>
 
   <Teleport v-if="!disabled && hasContent" :to="contentTeleportEl">
-    <div class="tab-pane" v-show="injection.modelValue === paneKey">
-      <div class="pane-header">
-        <div class="header-title">{{ contentTitle }}</div>
-        <div class="close-btn">
-          <i class="icon-mind icon-guanbi-24px" @click="onTabPaneClose"></i>
+    <div class="tab-pane-wrapper" v-show="injection.modelValue === paneKey">
+      <div class="tab-pane" v-if="!slots.customTabPane">
+        <div class="pane-title">
+          {{ contentTitle }}
+        </div>
+        <div class="pane-content">
+          <slot></slot>
         </div>
       </div>
-      <div class="pane-content">
-        <slot></slot>
+      <slot v-else name="customTabPane"></slot>
+      <div class="close-btn">
+        <i class="icon-mind icon-guanbi-24px" @click="onTabPaneClose"></i>
       </div>
     </div>
   </Teleport>
@@ -54,7 +59,9 @@ const slots = useSlots()
 const disabled = computed(() => injection.value.disabledList.includes(props.paneKey))
 
 /** 是否有内容 */
-const hasContent = computed(() => !!slots.default && !!props.contentTitle)
+const hasContent = computed(
+  () => (!!slots.default && !!props.contentTitle) || !!slots.customTabPane
+)
 
 const contentTeleportEl = computed(() => {
   const tabsWrapperRef = injection.value.tabsWrapperRef
@@ -128,58 +135,61 @@ const onTabPaneClose = (event: MouseEvent) => {
     background-color: #1476ff1a;
   }
 }
-.tab-pane {
-  padding: 12px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  .pane-header {
+.tab-pane-wrapper {
+  margin: 12px 24px;
+  position: relative;
+  .close-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 6px;
+    border-radius: 12px;
+    cursor: pointer;
+    &:hover {
+      background-color: getCssVar('fill-color');
+    }
+    &:active {
+      background-color: getCssVar('fill-color', 'dark');
+    }
+  }
+  .tab-pane {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    .header-title {
+    flex-direction: column;
+    gap: 24px;
+    .pane-title {
+      height: 37px;
+      line-height: 37px;
       font-family: getCssVar('font-family', 'medium');
       font-size: getCssVar('font-size', 'medium');
       color: getCssVar('color', 'black');
     }
-    .close-btn {
-      padding: 6px;
-      border-radius: 12px;
-      cursor: pointer;
-      &:hover {
-        background-color: getCssVar('fill-color');
+    .pane-content {
+      overflow-x: hidden;
+    }
+    .content {
+      width: 232px;
+      // 展示侧边栏存在标题，给负margin-top
+      margin: -16px auto 0;
+      .tab-title {
+        position: absolute;
+        font-size: 16px;
+        line-height: 22px;
+        color: var(--el-color-black);
+        left: 24px;
+        top: 21px;
       }
-      &:active {
-        background-color: getCssVar('fill-color', 'dark');
+      .title {
+        font-size: 14px;
+        padding: 12px 0 8px;
+        line-height: 20px;
+        margin-top: 16px;
       }
-    }
-  }
-  .pane-content {
-    overflow-x: hidden;
-  }
-  .content {
-    width: 232px;
-    // 展示侧边栏存在标题，给负margin-top
-    margin: -16px auto 0;
-    .tab-title {
-      position: absolute;
-      font-size: 16px;
-      line-height: 22px;
-      color: var(--el-color-black);
-      left: 24px;
-      top: 21px;
-    }
-    .title {
-      font-size: 14px;
-      padding: 12px 0 8px;
-      line-height: 20px;
-      margin-top: 16px;
-    }
-    .sub-title {
-      font-size: 14px;
-      color: rgba(0, 0, 0, 0.6);
-      line-height: 20px;
-      padding: 12px 0 8px;
+      .sub-title {
+        font-size: 14px;
+        color: rgba(0, 0, 0, 0.6);
+        line-height: 20px;
+        padding: 12px 0 8px;
+      }
     }
   }
 }

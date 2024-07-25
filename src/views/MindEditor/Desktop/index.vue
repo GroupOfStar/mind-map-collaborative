@@ -2,67 +2,164 @@
   <Tabs v-model="currentTab" @tabsClick="onTabsClick" :disabled="disabledList">
     <template #default>
       <TabPane
-        paneKey="outline"
-        :labelText="t('outline.title')"
+        paneKey="mindOutline"
+        :labelText="t('mindOutline.title')"
         labelIcon="icon-taigang"
         labelPosition="left"
-        :contentTitle="t('outline.title')"
+        :contentTitle="t('mindOutline.title')"
         contentPosition="left"
       >
-        {{ t('outline.title') }}
-        <el-table mb-1 :data="[]" />
-        <el-pagination :total="10" />
+        <MindOutline></MindOutline>
       </TabPane>
       <TabPane
         paneKey="revoke"
         labelIcon="icon-chexiao"
         :labelTipContent="t('shortcutKeys.revoke')"
-      >
-      </TabPane>
+      />
       <TabPane
         paneKey="recovery"
         labelIcon="icon-huifu"
         :labelTipContent="t('shortcutKeys.recovery')"
-      >
-      </TabPane>
+      />
       <TabPane
         paneKey="toCenter"
         labelIcon="icon-dingwei"
         :labelTipContent="t('shortcutKeys.backCenter')"
-      >
+      />
+      <TabPaneLine />
+      <TabPane paneKey="scaleSelect" :labelTipContent="'画布比例'">
+        <template #customTab>
+          <MindScale></MindScale>
+        </template>
       </TabPane>
       <TabPaneLine />
+      <TabPane
+        paneKey="mindStyle"
+        labelIcon="icon-yangshi"
+        :labelTipContent="t('mindStyle.title')"
+        :contentTitle="t('mindStyle.title')"
+      >
+        <template #customTabPane>
+          <MindStyle></MindStyle>
+        </template>
+      </TabPane>
+      <TabPane
+        paneKey="mindTheme"
+        labelIcon="icon-jiegoufengluo"
+        :labelTipContent="t('mindTheme.title')"
+        :contentTitle="t('mindTheme.title')"
+      >
+        <MindTheme></MindTheme>
+      </TabPane>
+      <TabPaneLine />
+      <TabPane
+        paneKey="insertNode"
+        labelIcon="icon-zharutongjijiedian"
+        :labelTipContent="t('shortcutKeys.insertNode')"
+      />
+      <TabPane
+        paneKey="insertChildNode"
+        labelIcon="icon-zharuzijijiedian"
+        :labelTipContent="t('shortcutKeys.insertChildNode')"
+      />
+      <TabPane
+        paneKey="generalization"
+        labelIcon="icon-gaiyao"
+        :labelTipContent="t('shortcutKeys.generalization')"
+      />
+      <TabPane
+        paneKey="associativeLine"
+        labelIcon="icon-lianxiexian"
+        :labelTipContent="t('shortcutKeys.associativeLine')"
+      />
+      <TabPane
+        paneKey="nodeIcon"
+        labelIcon="icon-biaoqing"
+        :labelTipContent="t('shortcutKeys.nodeIcon')"
+        :contentTitle="t('shortcutKeys.nodeIcon')"
+      >
+        <NodeIcon></NodeIcon>
+      </TabPane>
+      <TabPane
+        paneKey="nodeImage"
+        labelIcon="icon-zharutupian"
+        :labelTipContent="t('shortcutKeys.nodeImage')"
+      />
+      <TabPane
+        paneKey="nodeTag"
+        labelIcon="icon-zharubiaoqian"
+        :labelTipContent="t('shortcutKeys.nodeTag')"
+        :contentTitle="t('shortcutKeys.nodeTag')"
+      >
+        <NodeTag></NodeTag>
+      </TabPane>
+      <TabPaneLine />
+      <TabPane
+        paneKey="miniMap"
+        labelIcon="icon-shitudaohang"
+        :labelTipContent="t('shortcutKeys.miniMap')"
+      />
     </template>
-    <template #content><MindMap /></template>
+    <template #content>
+      <MindMap ref="mindMapRef" />
+    </template>
   </Tabs>
+
+  <NodeImage v-model="nodeImageVisible"></NodeImage>
 </template>
 
 <script lang="ts">
 export default {
   name: 'DesktopEditor'
 }
-type TTabPaneType = 'outline' | 'revoke' | 'recovery' | 'toCenter'
+type TTabPaneType =
+  | 'mindOutline'
+  | 'revoke'
+  | 'recovery'
+  | 'toCenter'
+  | 'scaleSelect'
+  | 'mindStyle'
+  | 'mindTheme'
+  | 'insertNode'
+  | 'insertChildNode'
+  | 'generalization'
+  | 'associativeLine'
+  | 'nodeIcon'
+  | 'nodeImage'
+  | 'nodeTag'
+  | 'miniMap'
 </script>
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useLocale } from 'element-plus'
+import 'element-plus/es/components/select/style/css'
 import { Tabs, TabPane, TabPaneLine } from './components/Tabs'
+import { MindOutline, MindScale, MindStyle, MindTheme, NodeIcon, NodeTag } from './SideContent'
+import NodeImage from './NodeImage/index.vue'
 import MindMap from '@/mindMap/index.vue'
 
-const currentTab = ref<TTabPaneType | undefined>('outline')
+const currentTab = ref<TTabPaneType>()
 const disabledList = reactive<TTabPaneType[]>(['revoke', 'recovery'])
+
+const mindMapRef = ref<InstanceType<typeof MindMap>>()
+
+const nodeImageVisible = ref<boolean>(false)
+
 const { t } = useLocale()
 
 function onTabsClick(tab?: TTabPaneType) {
   switch (tab) {
-    case 'outline':
+    case 'mindOutline':
       break
     case 'revoke':
       break
     case 'recovery':
       break
     case 'toCenter':
-      console.log('toCenter')
+      mindMapRef.value?.onGraphCenter()
+      break
+    case 'nodeImage':
+      nodeImageVisible.value = true
       break
     default:
       break
